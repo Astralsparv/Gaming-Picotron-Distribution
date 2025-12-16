@@ -2102,8 +2102,9 @@ function _draw()
 
 
 	if (not ws_gui or #workspace == 0) then
+		--create the dashboard
 		cls()
-		if (time() > 3) print("[no workspaces found] "..#workspace,20,20,13)
+		if (time() > 3) create_process("/system/dashboard.p64")
 		if (#workspace > 0) set_workspace(1)
 		return
 	end
@@ -2460,7 +2461,8 @@ function _draw()
 	-- debug audio control
 --	rectfill(30,250,200,256,1)
 --	print("\014 "..stat(498).." ("..stat(499)..")", 30,251,7) -- 498: active pfx6416 channels  499: which process has audio focus
-
+	local proc=fetch("/ram/system/processes.pod") or {}
+	print("\fe\^w\^t\^o7ffProcesses: "..#proc,4,4)
 end
 
 
