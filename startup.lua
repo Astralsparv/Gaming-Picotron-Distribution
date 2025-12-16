@@ -116,7 +116,7 @@ else
 	-- so maybe default grey icon ramp isn't so bad
 	local meta = _fetch_metadata_from_file("/system/.info.pod") or {}
 	_set_host_window_icon(meta.icon)
-	_set_host_window_title("Picotron") -- redundant; same as default
+	_set_host_window_title("Gametron") -- redundant; same as default
 end
 
 
@@ -169,11 +169,8 @@ mkdir "/ram/cart/sfx"
 mount("/system/util/dir.lua","/system/util/ls.lua")   
 mount("/system/util/edit.lua","/system/util/open.lua") 
 
-
--- create & populate default workspaces  
--- 0.2.0e: inside a regular process so that can use bbs:// carts as default editors (startup.lua is not wrapped by create_process())
-
-create_process("/system/misc/load_workspaces.lua")
+--startup dashboard
+create_process("/system/dashboard.p64")
 
 --[[
 if stat(317) > 0 then 
