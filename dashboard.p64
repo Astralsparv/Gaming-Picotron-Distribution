@@ -6,7 +6,7 @@ version 2
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-16 15:32:26",revision=92]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-16 18:59:45",revision=94]]
 function proportions(str)
 	set_draw_target(userdata("u8",1,1))
 	local w,h=print(str,0,0)
@@ -35,7 +35,7 @@ function drawObject(obj,x,y,selectedID)
 	elseif (obj.labeltype=="side" and selected) then
 		print(obj.label,x+object.width,y+5,fg)
 	end
-	sspr(obj.image,0,0,32,32,x+object.width/2-object.image.width/2,y+object.height/2-object.image.height/2,object.image.width,object.image.height)
+	spr(obj.image,x+object.width/2-object.image.width/2,y+object.height/2-object.image.height/2)
 	if (obj.dropped) then
 		for i=1, #obj.dropdown do
 			drawObject(obj.dropdown[i],x,y+i*(object.height+object.pad),selectedID)
@@ -125,12 +125,17 @@ function button(gui,data)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-16 15:54:30",revision=33]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-16 19:17:11",revision=79]]
 mkdir("/games/")
 games=ls("/games/")
 
+--why isn't is_cart() working?
+local function is_cart(filepath)
+	return (filepath:ext()=="p64") or (filepath:ext()=="p64.png") or (filepath:ext()=="p64.rom")
+end
+
 for i=#games, 1, -1 do
-	if (not (games[i]:is_cart())) then
+	if (not (is_cart(games[i]))) then
 		deli(games,i)
 	end
 end
@@ -200,12 +205,12 @@ local objects={
 }
 
 for i=1, #games do
-	local meta=fetch_metadata(games[i]) or {}
+	local meta=fetch_metadata("/games/"..games[i]) or {}
 	add(objects[1].dropdown,{
 		label=meta.title or games[i],
 		labeltype="side",
 		id=games[i],
-		image=get_spr(0),
+		image=meta.icon or get_spr(1),
 		dropped=false,
 		highlighted={
 			bg=29,
@@ -217,17 +222,28 @@ for i=1, #games do
 		bg2=18,
 		fg=7,
 		fg2=6,
+		action=function() create_process("/games/"..games[i]) end,
 		dropdown={}
 	})
 end
 
-for i=1, #objects do
-	local w,h=proportions(objects[i].label)
-	objects[i].labelProportions={w=w,h=h}
-	for j=1, #objects[i].dropdown do
-		local w,h=proportions(objects[i].dropdown[j].label)
-		objects[i].dropdown[j].labelProportions={w=w,h=h}
+local function preProcessObject(obj)
+	local w,h=proportions(obj.label)
+	obj.labelProportions={w=w,h=h}
+	if (obj.image:width()!=32 or obj.image:height()!=32) then
+		local ud=userdata("u8",32,32)
+		set_draw_target(ud)
+		sspr(obj.image,0,0,obj.image:width(),obj.image:height(),0,0,32,32)
+		set_draw_target()
+		obj.image=ud
 	end
+	for i=1, #obj.dropdown do
+		preProcessObject(obj.dropdown[i])
+	end
+end
+
+for i=1, #objects do
+	preProcessObject(objects[i])
 end
 
 local selected=""
@@ -251,20 +267,25 @@ function update_games()
 		end
 		if (selector.y!=0) then
 			selected=objects[i].dropdown[selector.y].id
+			selectedLoc={selector.x+1,selector.y+1}
 		else
 			selected=objects[i].id
+			selectedLoc={selector.x+1,selector.y+1}
 		end
 	else
 		selector.y=0
 		selected=objects[i].id
+		selectedLoc={selector.x+1,selector.y+1}
 	end
-	for i=1, #objects do
-		if (selected==objects[i].id) then
-			if (btnp(5)) then
-				objects[i].dropped=not objects[i].dropped
-				if (type(objects[i].action)=="function") objects[i]:action()
-			end
-		end
+	local obj
+	if (selectedLoc[2]>1) then
+		obj=objects[selectedLoc[1]].dropdown[selectedLoc[2]-1]
+	else
+		obj=objects[selectedLoc[1]]
+	end
+	if (btnp(5)) then
+		obj.dropped=not obj.dropped
+		if (type(obj.action)=="function") obj:action()
 	end
 --	if (time()-internetCheck>15) then
 --		internetAccess=internet()
@@ -296,7 +317,7 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-16 15:50:14",revision=393]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-16 19:24:45",revision=426]]
 local gui=create_gui{}
 
 local selector={
@@ -411,16 +432,93 @@ local objects={
 		fg2=6,
 		out=13,
 		dropdown={}
+	},{
+		label="System",
+		labeltype="embed",
+		image=get_spr(3),
+		id="system",
+		dropped=false,
+		highlighted={
+			bg=29,
+			bg2=29,
+			fg=7,
+			fg2=6,
+		},
+		bg=29,
+		bg2=18,
+		fg=7,
+		fg2=6,
+		out=13,
+		dropdown={
+			{
+				label="Reboot",
+				labeltype="side",
+				image=get_spr(3),
+				id="system-reboot",
+				dropped=false,
+				highlighted={
+					bg=29,
+					bg2=29,
+					fg=7,
+					fg2=6,
+				},
+				bg=29,
+				bg2=18,
+				fg=7,
+				fg2=6,
+				out=13,
+				action=function() send_message(2,{event="reboot"}) end,
+				dropdown={}
+			}
+		}
 	}
 }
 
-for i=1, #objects do
-	local w,h=proportions(objects[i].label)
-	objects[i].labelProportions={w=w,h=h}
-	for j=1, #objects[i].dropdown do
-		local w,h=proportions(objects[i].dropdown[j].label)
-		objects[i].dropdown[j].labelProportions={w=w,h=h}
+local distros=ls("/distributions/")
+
+for i=1, #distros do
+	if (distros[i]:ext()==nil) then --is a distro
+		local meta=fetch_metadata("/distributions/"..distros[i]) or {}
+		add(objects[3].dropdown,{
+			label=(meta.title or distros[i]).."\n"..(meta.version or "No version"),
+			labeltype="side",
+			image=meta.icon or get_spr(3),
+			id="distribution-"..distros[i],
+			dropped=false,
+			highlighted={
+				bg=29,
+				bg2=29,
+				fg=7,
+				fg2=6,
+			},
+			bg=29,
+			bg2=18,
+			fg=7,
+			fg2=6,
+			out=13,
+			action=function() store("/distributions/bootinto.txt",distros[i]) send_message(2,{event="reboot"}) end,
+			dropdown={}
+		})
 	end
+end
+
+local function preProcessObject(obj)
+	local w,h=proportions(obj.label)
+	obj.labelProportions={w=w,h=h}
+	if (obj.image:width()!=32 or obj.image:height()!=32) then
+		local ud=userdata("u8",32,32)
+		set_draw_target(ud)
+		sspr(obj.image,0,0,obj.image:width(),obj.image:height(),0,0,32,32)
+		set_draw_target()
+		obj.image=ud
+	end
+	for i=1, #obj.dropdown do
+		preProcessObject(obj.dropdown[i])
+	end
+end
+
+for i=1, #objects do
+	preProcessObject(objects[i])
 end
 
 local selected=""
@@ -495,11 +593,13 @@ function draw_home()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-16 15:49:41",revision=37]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-16 19:14:49",revision=40]]
 include "functs.lua"
 include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
+
+window{pauseable=false}
 
 --internetAccess=internet()
 
@@ -524,9 +624,9 @@ function _draw()
 	end
 end
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 15:54:30",runtime=24,workspaces={{location="main.lua#25",workspace_index=1},{location="guis/home.lua#1",workspace_index=1},{location="guis/games.lua#5",workspace_index=1},{location="gui.lua#1",workspace_index=1},{location="functs.lua#39",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45",runtime=24,workspaces={{location="main.lua#7",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#97",workspace_index=1},{location="gui.lua#1",workspace_index=1},{location="functs.lua#29",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 15:54:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -539,16 +639,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-16 15:54:30"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-16 19:24:45"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 15:54:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 15:54:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
