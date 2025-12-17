@@ -3012,7 +3012,20 @@ function _update()
 			if (btn(4)) mb+=1
 			if (btn(5)) mb+=2
 
+			last_input_activity_t = time() 
 
+			--printh("mouse event "..pod{proc_id = win.proc_id, mx, my, mb})
+
+			win.send_mouse_update = nil
+
+			-- every window can read the mouse position, but only the active window can read mouse button state.
+			-- dorky iterator for ws_gui and tooltray_gui
+			local pointer_el = head_gui:get_pointer_element()
+			if (@0x547c > 0) pointer_el = win -- video mode set -> assume pointing at active window
+			for i=1,#ws_gui.child + #tooltray_gui.child do
+				local win2 = i <= #ws_gui.child and ws_gui.child[i] or tooltray_gui.child[i - #ws_gui.child]
+				send_message(2, {event="mouse",mx=mx,my=my,mb=mb})
+			end]]
 		end
 		last_mx, last_my, last_mb = mx, my, mb
 	end
