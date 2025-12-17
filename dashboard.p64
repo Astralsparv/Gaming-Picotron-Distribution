@@ -7,7 +7,7 @@ version 2
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-17 19:07:16",revision=100]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-17 19:30:39",revision=101]]
 function proportions(str)
 	set_draw_target(userdata("u8",1,1))
 	local w,h=print(str,0,0)
@@ -111,7 +111,7 @@ function wrapText(text,width)
 	return res,nl,fwidth
 end
 :: gui.lua
---[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-16 14:20:51",revision=5]]
+--[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-17 20:05:03",revision=34]]
 function text(gui,data)
 	local width,height=proportions(data.label)
 	width+=1
@@ -169,8 +169,11 @@ end
 
 function button(gui,data)
 	local width,height=proportions(data.label)
-	width+=1
-	height-=1 --there's some extra space for some reason
+	data.rounding=data.rounding or 0
+	data.paddingw=data.paddingw or 1
+	data.paddingh=data.paddingh or 1
+	width+=data.paddingw
+	height+=data.paddingh
 	local o=gui:attach{
 		x=data.x,
 		y=data.y,
@@ -178,20 +181,42 @@ function button(gui,data)
 		width=width,
 		height=height,
 		bg=data.bg or 1,
+		bg2=data.bg2 or 1,
 		fg=data.fg or 7,
+		paddingw=data.paddingw,
+		paddingh=data.paddingh,
+		hovering=false,
 		draw=function(self)
-			rectfill(0,0,self.width-1,self.height-1,self.bg)
-			print(self.label,1,1,self.fg)
+			local bg=self.bg
+			if (self.hovering) bg=self.bg2
+			rrectfill(0,0,self.width-1,self.height-1,data.rounding,bg)
+			print(self.label,self.paddingw/2+1,self.paddingh/2+1,self.fg)
+			self.hovering=false
 		end,
+		hover=function(self) self.hovering=true end,
 		tap=data.tap,
 		cursor="pointer"
 	}
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-17 19:24:31",revision=267]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-17 20:06:46",revision=366]]
 mkdir("/games/")
 games=ls("/games/")
+
+local theming={
+	highlighted={
+		bg=29,
+		bg2=29,
+		fg=7,
+		fg2=6,
+	},
+	bg=29,
+	bg2=18,
+	fg=7,
+	fg2=6,
+	out=13,
+}
 
 --why isn't is_cart() working?
 local function is_cart(filepath)
@@ -216,7 +241,7 @@ local x,y=2,2
 local w,h=text(gui,{
 	x=x,
 	y=y,
-	label="\^w\^tDashboard",
+	label="\^w\^tGame Dashboard",
 })
 y+=h+5
 
@@ -236,6 +261,22 @@ local columns=4
 local xx=240-columns*(object.width+object.pad)/2
 local yy=135-rows*(object.height+object.pad)/2
 
+x,y=xx,yy-15
+local w,h=button(gui,{
+	x=x,
+	y=y,
+	label="\014\^w\^tEXIT",
+	bg=theming.bg,
+	bg2=theming.bg2,
+	rounding=2,
+	paddingw=6,
+	paddingh=1,
+	tap=function()
+		window{cursor=1}
+		screen="home"
+	end
+})
+
 for x=1, columns do
 	for y=1, rows do
 		add(objects,gui:attach{
@@ -246,11 +287,19 @@ for x=1, columns do
 			label={},
 			labelcolor=7,
 			imagex=object.width/2-object.image.width/2,
-			imagey=0,
+			imagey=3,
+			hovering=false,
+			cursor="pointer",
 			draw=function(self)
-				rectfill(0,0,self.width-1,self.height-1,1)
+				local bg2=theming.bg2
+				local bg=theming.bg
+				if (self.hovering) then
+					bg,bg2=theming.highlighted.bg,theming.highlighted.bg2
+				end
+				rrectfill(0,0,self.width-1,self.height-1,8,bg2)
+				rrectfill(0,0,self.width-3,self.height-3,8,bg)
 				spr(self.image,self.imagex,self.imagey)
-				local y=object.image.height+3
+				local y=object.image.height+2+self.imagey
 				for _,data in pairs(self.label) do
 					local label=data.label
 					local w=data.w
@@ -258,7 +307,12 @@ for x=1, columns do
 					print(label,object.width/2-w/2,y,self.labelcolor)
 					y+=h
 				end
-			end
+				self.hovering=false
+			end,
+			tap=function(self)
+				create_process(self.game)
+			end,
+			hover=function(self) self.hovering=true end
 		})
 	end
 end
@@ -284,7 +338,7 @@ for i=1, #objects do
 	objects[i].bg2=18
 	objects[i].fg=7
 	objects[i].fg2=6
-	objects[i].game=games[i]
+	objects[i].game="/games/"..games[i]
 	label=split(label,"\n")
 	local processed={}
 	for i=1, #label do
@@ -594,15 +648,16 @@ function draw_home()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-17 19:06:20",revision=48]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-17 20:07:12",revision=52]]
 fetch("fonts/thin.font"):poke(0x4000)
+fetch("fonts/widesquat.font"):poke(0x5600)
 
 include "functs.lua"
 include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
 
---poke(0x547d, 0x3f)
+poke(0x547d, 0x3f)
 window{width=480,height=270,has_frame=false,x=0,y=0,z=-999}
 
 --internetAccess=internet()
@@ -629,52 +684,9 @@ function _draw()
 	end
 end
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 19:28:24",runtime=24,workspaces={{location="main.lua#1",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#59",workspace_index=1},{location="gui.lua#1",workspace_index=1},{location="functs.lua#58",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#137",workspace_index=1},{location="gui.lua#80",workspace_index=1},{location="functs.lua#58",workspace_index=1},{location="gfx/0.gfx",workspace_index=2},{location="fonts/thin.font",workspace_index=7}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-17 19:28:24"]]
-:: fonts/0.font
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjIzIixpY29uPXVzZXJkYXRhKCJ1
-OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
-NzA3MDcwNjAxMDAwMDAwMDAwMDAxMDcwNzA3MDcwNzA3MDcwNzA2MDYwMTAwMDAwMDAwMDEwNzA3
-MDcwNzA3MDcwNzA3MDYwNjA2MDEwMDAwMDAwMTA3MDcwNzA3MDcwNzA3MDcwNjA2MDYwNjAxMDAw
-MDAxMDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MDEwMDAwMDEwNzBkMGQwZDBkMGQwZDBkMGQwNzA3
-MDcwMTAwMDAwMTA3MGQwNzA3MGQwZDA3MDcwZDA3MDcwNzAxMDAwMDAxMDcwNzA3MDcwZDBkMDcw
-NzA3MDcwNzA3MDEwMDAwMDEwNzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzA3
-MGQwZDA3MDcwNzA3MDcwNzAxMDAwMDAxMDcwNzA3MDcwZDBkMDcwNzA3MDcwNzA3MDEwMDAwMDEw
-NzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzBkMGQwZDBkMDcwNzA3MDcwNzAx
-MDAwMDAxMDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MDEwMDAwMDEwMTAxMDEwMTAxMDEwMTAxMDEw
-MTAxMDEwMTAwIiksbW9kaWZpZWQ9IjIwMjUtMTItMTcgMTg6NDQ6MjMiLHJldmlzaW9uPTBdXWx6
-NADMBgAAJwcAAPAScHh1AAMoAAgAAAQFCQsQA2ABIA8QQAewD3AADxAgAQ5wCQDwJRcwDvA0bw8g
-LUANCQ1ACQYJQAkACUApMAwPDg0KDCADBw0HAxAHEYAYCgAPEQ8bCg8fDwQEAPAGMAaABgxQFgAV
-UAYJBsBCAAIAFXAPHgABBADwOhAPBAoBBggHBBAJBAIJIAIFAgsFDwoAFFAEUgQCVAIQBQIHAgUw
-BAoEcAQCMA2AAhAUEhEABgkPDQsZBgAEBjQKAAYJCAQCAQ0IADAGCAkVAPIqFQ0UAA0RBxgHAAYR
-BxkGAA0YBCIABhkGGQYABhkKGAYwAgACQAQABAIgBAIBAgQwDQANMAIECAQCTADwDgACEAoJHgEK
-AAYZDSkABxkHGQcABgkhCQYAB0kHWQAgEQ0GAJAhAAoRDhkKACklAPEBQgcACjgJBgAZBQMFGQBR
-DQMB0B8VLxEACQsOOQAGSQZJAPEBIQAGOQsGDwwHGQcpAAYJAbAA8YQPH1QAWQoASQUDAC8RHxUP
-Gw8RACkGKQApChgHAA0IBAIRDQAHUQcAERIUAApYCgIFsA0AAgRwBggKCQoAEQcpByAKIQoAGAop
-CiAGCQ0BCgAPDBINIiAKGQoIBhEHOQACAAMiBwAIAAwoCQYRCQUDBQkAA0IGIAsfFR8RIAc5IAYp
-BiAHGQcREAoZChgQDw0DISCSAeAAEg0iDCA5CiApBQMgH5oA4AogGQYZICkKCAYQDQgGcwH2DBIB
-IgYAIgAiBhQIJAYADgVQExwgb38AD1UPKgQA8AgAD0EPYw9-H10Pdw8_AAsfYw93Cw9BCyMBFkQE
-APAPAAQMD3wLDx8PGA8QAA8cDyYfXw9-Cw8cAA8iD3cfCgDwEAgADyoPHA82D3cPNg8cDyoAHxwL
-D10PHB8UAAgPHAsuALEqDzoACw9nD2MPZ2MAEQt3APEGfw9jCwAPGA94KA0PBwALD2MPaw9jIADz
-CAgPFA8qD10PKg8UCDAPVTALD3MPYw9zHAAxHA9-cADxBCIQD38PIg8UCAcPIg9-AAsPdx8-APMB
-EA4EAA9QDyAQDxEPKg9EAAcAcQsPaw93D2tFAEEPfwAJAgDwBG9VAAQPHwQLD1UPTQ8mEA8iL0I_
-APA-GAALH0APIA8cAAoADz8IBA9ODzMABA9fD4QLH0UPJgAPQg_fD6IfIg8pDzEACAsPEA98DyAP
-AQ8OAA9ADzAMAgwBD0AAHxEPfS8RDhALGgBjfgAYBg8QJQDxEzIPQg8iCgAICQwODAgEABUJBQ8y
-Ag88AAMPEAgP-g8QCAGWAPEJD_QEDxIP4gAEDz8EDzQPTA9ADz8QAw9DmwDxOR4ACQgkCAEAHxAP
-eAQSD3wABA9vBB8kD3IPsgAPAQ89HwEPBQ95AgAIHwkLD0sP7Q9uABIPOw9GD0IP4w9iEAMPUg_R
-H4kPRqcA8AIfEQ85D10QDxMPEg8xD1EPEcoAAPIB9QUIDQ9SD4kQDA8SDyEPQA_AEA99DzAA8FgA
-CwgLCA8ODzkPTwAIBA8kBg8mDyANAA8kD04EDwYPBQ9GDzgAHxIPfA_WD4oPRAEACA8eBAcfRA84
-EA8SCQ9CDzIUAA0PPR9TD1EPPQgAGA84CAwPGg9sAAwAAg86D0YPQAMADyAlVgAAkgGVCgMPRg9B
-D0wDyQA1Qw-CFwAlIAoXAPAOIw8aAA8HAg9uDxkPFAIDABQCDw4PEg_RD3EgDzhXAPAkDyAKIA8U
-Cw8kGCAPOg9WD1IBCCAIDzgIAwwACQ9ADyQPFAQCDwEADyANDA8LKAAICR9BDADwCAALSAkAHg-_
-AQ8oDyYBAAQJH0QfQg9xoAHxABgPfh0ABA98D0IPQQ4NDAsA8AgSDxENGAAPPz4GDgAVCRUNCAAP
-BggPAYEA8xIODx8ACR9ADgEPTA_DAAQPdA9PDyQUD3gAH0EPQh4NDw5MAPAJSQEPUAwADzgPDggJ
-GAQAD0UPSQ9KD0AOIgDwBgsACSgEABIHDzIiABgJKAQQCyAJEL8A8BxEDygNDywPAwAID34PQAEM
-DyoPSQAuHQgPBwAfFA8kFR9BAB8BDxkPBx8BRgJUL0AODQziAZAgCAkIHyoPSQyfAPIPBQ8UCA0A
-Dx4PYA8GDzgADwcPeAAYFA9CD3IPjwAfaQCACg9HAAYUCRQgAMByD08FDxIkEAseHQlAAFAPfh9A
-CagAYBMODxwANRgB8ApPFA9SDzEAPwEPQQ8xDw8ACT9BCQcACRcDHQBACRMPfAgA8CAPAQ8GEw4N
-Dw8wDyoODQwgBAsPJBQwDxwdCyAPHg0CDQIAGAQPYw0YABgNAQQYAA==
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-17 20:07:12"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -686,38 +698,38 @@ NzA3MDcwNzA3MDEwMDAwMDEwNzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzA3
 MGQwZDA3MDcwNzA3MDcwNzAxMDAwMDAxMDcwNzA3MDcwZDBkMDcwNzA3MDcwNzA3MDEwMDAwMDEw
 NzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzBkMGQwZDBkMDcwNzA3MDcwNzAx
 MDAwMDAxMDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MDEwMDAwMDEwMTAxMDEwMTAxMDEwMTAxMDEw
-MTAxMDEwMTAwIiksbW9kaWZpZWQ9IjIwMjUtMTItMTcgMTg6NTc6MjUiLHJldmlzaW9uPTI1XV1s
-ejQAwAYAABsHAADwsXB4dQADKAAIAAAEBAkLEANgASAPEEAHcAEgD3AADyABEAEOcA9gAA4wDiAP
-EfAwbw8gLUANCQ1ACQYJQAkACUApMAwPDg0KDCADBw0HAxAHEYAYCgAPEQ8bCg8fBAUEMAaABgxQ
-FgAfBVAGCQbATwIAAgAfBXAPCgULBQsQBAoBBggHBBAJBAIJIAIPBQIPCw8FCwAUUARSBAJUAhAO
-AgcCDjAECgRwBAIwDYACEBQSEQACTgIAAgMyBwACDhQCAQcA8TIEAgQOAgAEBh4HFAAHEQMUAwAG
-EQceAgAHFAIhAAIeAh4CAAIeBhQDMAIAAkAEAAQCIAQCAQIEMAcABzABAgQCAUsA8A8AAhAKCR8N
-AQoAAh4HLgADHgMeAwACDiEOAgADTgNZACARBwYA8QshAAYRLgYALgcuAAdCBwAGNA4CAC4DLgBR
-B-gAsQ8VPxEACQ8LDw05qwCQAx4DIQACPgIECgBBLgAGEa0A8AwHUgBeBgBOBwIAPxEPFQ8bDxEA
-LgIuAC4GFAO3AABqAPAcUQcAERIUAAdUBwIOsAcAAgRwAwQGDgYAEQMuAyAGIQYAFAYuBiACDgMB
-BvAA8E8hIAYeBgQDEQM_AAEAQQAEAAYkDgIRHgMeAANCBiAPCw8VLxEgAz4gAi4CIAMeAxEQBh4G
-DwwEEA4DISAGAQIEAwASByIEID4GID4DIC8RDxULIB4CHiAuBgQCEAcEaQH2DgYSASIGACIAIgES
-BCIBAAsOUBMfDCBvfwAPVQ8qBADwCAAPQQ9jD38fXQ93Dz4ADB9jD3cMD0EMHQEWRAQA8BAABA8M
-D3wMDx8PGA8QAA8cDyYfXw9-DA8cAA8iD3cfCgDwEAgADyoPHA82D3cPNg8cDyoAHxwMD10PHB8U
-AAgPHAwuALEqDzoADA9nD2MPZ2QAEQx4APEFfw9jDAAPGA94KA0HAAwPYw9rD2MfAPMICA8UDyoP
-XQ8qDxQIMA9VMAwPcw9jD3McADEcD39vAPEEIhAPfw8iDxQIBQ8iD38ADA93Hz8A8wEQCwQAD1AP
-IBAPEQ8qD0QABwBxDA9rD3cPa0UAQQ9-AAoCAPAEb1UABA8fBAwPVQ9NDyYQDyIvQj4A8kkYAAwf
-QA8gDxwACQAPPwgED04PMwAED18PhAwfRQ8mAA9CD58Poh8iDykPMQAIDA8QD3wPIAEPDgAPQA8w
-DwwCBg8wD0AAHxEPfS8RCxAMIAEPfgAYDg8QJQDwDzIPQg8iCQAICgYLBggEABMKAw8yAg88AA0P
-EAgP-gUAETCWAPEJD_QEDxIP4gAEDz8EDzQPTA9ADz8QDQ9DmwBQHgAKCCQqAPEvHxAPeAQSD3wA
-BA9vBB8kD3IPsgABDz0RDwUPeQIACB8JDA9LD_0PbgASDzsPRg9CD_MPYhAND1IPkR_JD0alAPAC
-HxEPOQ9dEA8TDxIPMQ9RDxHKAADwAfUFCAcPUg_JEAYPEg8hD0APgBAPfQ8wAPBZAAwIDAgPDg85
-D08ACAQPJA4PJg8gBwAPJA9OBA8GDwUPRg84AB8SD3wPlg_KD0QPMAAIDx4EBR9EDzgQDxIKD0IP
-MhQABw89H1MPUQ89CAAYDzgIBg8aD2wABgACDzoPRg9ADQAPICNXAACSAZUJDQ9GD0EPTA3KADVD
-D8IXACUgCRcA8A4jDxoADwcCD24PGQ8UAg0AFAIPDg8SD5EPcSAPOFcA8BQPIAkgDxQMDyQYIA86
-D1YPUg8wCCAIDzgIDQYACg9ADyQPFG4EwA8gBwYPCygACAofQQwA4AAMSAoAGw-_DzAPKA8mpQFw
-Ch9EH0IPcaIB8QAYD34XAAQPfA9CD0ELBwYLAPAHEg8RBxgADz87DgsAEwoTBwgADwYIAYIA8xML
-Dx8ACh9ACw8wD0wPgwAED3QPTw8kFA94AB9BD0IbBw8OTADwCkkPMA9QBgAPOA8OCAoYBAAPRQ9J
-D0oPQAsjAPAGDAAKKAQAEgUPMiIAGAooBBAMIAoQwQDARA8oBw8sDwMACA9_kwLwCwYPKg9JACsX
-CA8HAB8UDyQTH0EAEQ8ZDwcRSAJUL0ALBwblAZAgCAoIHyoPSQagAPIPAw8UCAcADx4PYA8GDzgA
-DwcPeAAYFA9CD3IPjwAfaACACQ9HAA4UChQgAMByD08DDxIkEAwbFwpAAFAPfh9ACqcAYB0LDxwA
-MxgB8AlPFA9SDzEAMQ9BDzEPDwAKP0EKBQAKFQ0cAEAKHQ98CADwHwEPBh0LBw8PMA8qCwcGIAQM
-DyQUMA8cFwwgDx4HAgcCABgED2MHGAAYBwkEGAA=
+MTAxMDEwMTAwIiksbW9kaWZpZWQ9IjIwMjUtMTItMTcgMTk6NTY6NDciLHJldmlzaW9uPTI2XV1s
+ejQAvQYAABgHAADwrnB4dQADKAAIAAAEBAkLEANgASAPEEAHcAFADyABEAEOcA9gAA4wDiAPEfAw
+bw8gLUANCQ1ACQYJQAkACUApMAwPDg0KDCADBw0HAxAHEYAYCgAPEQ8bCg8fBAUEMAaABgxQFgAf
+BVAGCQbATwIAAgAfBXAPCgULBQsQBAoBBggHBBAJBAIJIAIPBQIPCw8FCwAUUARSBAJUAhAOAgcC
+DjAECgRwBAIwDYACEBQSEQACTgIAAgMyBwACDhQCAQcA8TIEAgQOAgAEBh4HFAAHEQMUAwAGEQce
+AgAHFAIhAAIeAh4CAAIeBhQDMAIAAkAEAAQCIAQCAQIEMAcABzABAgQCAUsA8A8AAhAKCR8NAQoA
+Ah4HLgADHgMeAwACDiEOAgADTgNZACARBwYA8QshAAYRLgYALgcuAAdCBwAGNA4CAC4DLgBRB-gA
+sQ8VPxEACQ8LDw05qwCQAx4DIQACPgIECgBBLgAGEa0A8AwHUgBeBgBOBwIAPxEPFQ8bDxEALgIu
+AC4GFAO3AABqAPAcUQcAERIUAAdUBwIOsAcAAgRwAwQGDgYAEQMuAyAGIQYAFAYuBiACDgMBBvAA
+8E8hIAYeBgQDEQM_AAEAQQAEAAYkDgIRHgMeAANCBiAPCw8VLxEgAz4gAi4CIAMeAxEQBh4GDwwE
+EA4DISAGAQIEAwASByIEID4GID4DIC8RDxULIB4CHiAuBgQCEAcEaQH2DgYSASIGACIAIgESBCIB
+AAsOUBMfDCBvfwAPVQ8qBADwCAAPQQ9jD38fXQ93Dz4ADB9jD3cMD0EMHQEWRAQA8BAABA8MD3wM
+Dx8PGA8QAA8cDyYfXw9-DA8cAA8iD3cfCgDwEAgADyoPHA82D3cPNg8cDyoAHxwMD10PHB8UAAgP
+HAwuALEqDzoADA9nD2MPZ2QAEQx4APEFfw9jDAAPGA94KA0HAAwPYw9rD2MfAPMICA8UDyoPXQ8q
+DxQIMA9VMAwPcw9jD3McADEcD39vAPEEIhAPfw8iDxQIBQ8iD38ADA93Hz8A8wEQCwQAD1APIBAP
+EQ8qD0QABwBxDA9rD3cPa0UAQQ9-AAoCAPAEb1UABA8fBAwPVQ9NDyYQDyIvQj4A8kkYAAwfQA8g
+DxwACQAPPwgED04PMwAED18PhAwfRQ8mAA9CD58Poh8iDykPMQAIDA8QD3wPIAEPDgAPQA8wDwwC
+Bg8wD0AAHxEPfS8RCxAMIAEPfgAYDg8QJQDwDzIPQg8iCQAICgYLBggEABMKAw8yAg88AA0PEAgP
+-gUAETCWAPEJD_QEDxIP4gAEDz8EDzQPTA9ADz8QDQ9DmwBQHgAKCCQqAPEvHxAPeAQSD3wABA9v
+BB8kD3IPsgABDz0RDwUPeQIACB8JDA9LD_0PbgASDzsPRg9CD_MPYhAND1IPkR_JD0alAPACHxEP
+OQ9dEA8TDxIPMQ9RDxHKAADwAfUFCAcPUg_JEAYPEg8hD0APgBAPfQ8wAPBZAAwIDAgPDg85D08A
+CAQPJA4PJg8gBwAPJA9OBA8GDwUPRg84AB8SD3wPlg_KD0QPMAAIDx4EBR9EDzgQDxIKD0IPMhQA
+Bw89H1MPUQ89CAAYDzgIBg8aD2wABgACDzoPRg9ADQAPICNXAACSAZUJDQ9GD0EPTA3KADVDD8IX
+ACUgCRcA8A4jDxoADwcCD24PGQ8UAg0AFAIPDg8SD5EPcSAPOFcA8BQPIAkgDxQMDyQYIA86D1YP
+Ug8wCCAIDzgIDQYACg9ADyQPFG4EwA8gBwYPCygACAofQQwA4AAMSAoAGw-_DzAPKA8mpQFwCh9E
+H0IPcaIB8QAYD34XAAQPfA9CD0ELBwYLAPAHEg8RBxgADz87DgsAEwoTBwgADwYIAYIA8xMLDx8A
+Ch9ACw8wD0wPgwAED3QPTw8kFA94AB9BD0IbBw8OTADwCkkPMA9QBgAPOA8OCAoYBAAPRQ9JD0oP
+QAsjAPAGDAAKKAQAEgUPMiIAGAooBBAMIAoQwQDARA8oBw8sDwMACA9_kwLwCwYPKg9JACsXCA8H
+AB8UDyQTH0EAEQ8ZDwcRSAJUL0ALBwblAZAgCAoIHyoPSQagAPIPAw8UCAcADx4PYA8GDzgADwcP
+eAAYFA9CD3IPjwAfaACACQ9HAA4UChQgAMByD08DDxIkEAwbFwpAAFAPfh9ACqcAYB0LDxwAMxgB
+8AlPFA9SDzEAMQ9BDzEPDwAKP0EKBQAKFQ0cAEAKHQ98CADwHwEPBh0LBw8PMA8qCwcGIAQMDyQU
+MA8cFwwgDx4HAgcCABgED2MHGAAYBwkEGAA=
 :: fonts/widesquat.font
 b64$LS1bW3BvZCxhdXRob3I9IkB0aGVseGlub2U1IixjcmVhdGVkPSIyMDI1LTA0LTA3IDEzOjA3
 OjU4IixpY29uPXVzZXJkYXRhKCJ1OCIsMTYsMTYsIjAwMTkxOTE5MTkxOTE5MTkxOTE5MTkwMDAw
@@ -761,7 +773,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 19:28:24"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -774,16 +786,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-17 19:28:24"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-17 20:07:12"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 19:28:24"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 19:28:24"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO

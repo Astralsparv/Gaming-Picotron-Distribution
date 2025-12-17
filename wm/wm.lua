@@ -3000,6 +3000,18 @@ function _update()
 						mb = (win == win2 and win == pointer_el) and mb or 0
 					})
 			end
+--[[
+		else
+			mx,my = last_mx,last_my
+			mb=0
+			_printh(mx.." "..my)
+			--kernel controller cursor
+			mx+=((btn(1) or 0) - (btn(0) or 0))/255
+			my+=((btn(3) or 0) - (btn(2) or 0))/255
+			_printh(mx.." "..my)
+			if (btn(4)) mb+=1
+			if (btn(5)) mb+=2
+
 
 		end
 		last_mx, last_my, last_mb = mx, my, mb

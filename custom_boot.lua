@@ -92,7 +92,6 @@ function run_userland_processes(allotment)
 		store("/ram/system/processes.pod", pl)
 		last_processes_list_publish = time()
 	end
-	printh(pod(pl))
 
 
 	while(pl[1] and pl[1].id <= wm_proc_id) do
