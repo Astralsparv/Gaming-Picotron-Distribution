@@ -180,9 +180,6 @@ local create_process_n = 0
 ]]
 -- 
 function create_process(prog_name_p, env_patch)
-	if (_envdat.argv and _envdat.argv[0]=="/system/dashboard.p64") then
-		_send_message(2,{event="kill_process",proc_id=_pidval})
-	end
 	env_patch = env_patch or {}
 
 	-- 1. sandboxed programs can not create processes

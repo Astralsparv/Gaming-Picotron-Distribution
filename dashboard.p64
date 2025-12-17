@@ -294,7 +294,6 @@ function update_games()
 end
 
 function draw_games()
-	cls(1)
 	gui:draw_all()
 --	local x,y=240-#objects*(object.width+object.pad)/2,135-object.height/2
 	local x,y=240-object.width/2,135-object.height/2
@@ -570,7 +569,6 @@ function update_home()
 end
 
 function draw_home()
-	cls(1)
 	gui:draw_all()
 --	local x,y=240-#objects*(object.width+object.pad)/2,135-object.height/2
 	local x,y=240-object.width/2,135-object.height/2
@@ -599,7 +597,8 @@ include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
 
-window{pauseable=false}
+poke(0x547d, 0xff)
+window{width=480,height=270,has_frame=false,x=0,y=0,z=-999}
 
 --internetAccess=internet()
 
@@ -617,6 +616,7 @@ function _update()
 end
 
 function _draw()
+	cls(0)
 	if (screen=="home") then
 		draw_home()
 	elseif (screen=="games") then

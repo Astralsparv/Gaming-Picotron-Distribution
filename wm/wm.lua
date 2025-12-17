@@ -173,7 +173,7 @@ function generate_head_gui()
 --		local show_infobar = ws_gui.show_infobar
 		local show_infobar = get_show_infobar()
 
-		if (key("alt")) show_toolbar = true
+--		if (key("alt")) show_toolbar = true
 
 		-- auto-showing bars using mouse position is annoying in fullscreen; just for tools / desktop
 		-- fullscreen has ESC, but tools have no other way to reach toolbar (without knowing kbd shortcut)
@@ -1969,9 +1969,10 @@ function create_window(target_ws, attribs)
 	-- creating a desktop wallpaper --> automatically create a filenav overlay
 
 	if win.wallpaper and target_ws and (win.workspace == "new" or win.workspace == "tooltray") then
-
+		--[[
 		local filenav_workspace = win.workspace == "tooltray" and "tooltray" or target_ws.id
 
+		no filenav!
 		target_ws.desktop_filenav_proc_id = 
 		create_process("/system/apps/filenav.p64",{
 			 -- window attribs of the desktop program launching the desktop filenav
@@ -1986,8 +1987,9 @@ function create_window(target_ws, attribs)
 				resizeable = false,
 				desktop_filenav = true
 			}
-		})
+		})]]--
 	end
+	if (win.wallpaper) create_process("/system/dashboard.p64",{window_attribs={show_in_workspace=true}})
 
 	
 	return win	
@@ -2104,7 +2106,6 @@ function _draw()
 	if (not ws_gui or #workspace == 0) then
 		--create the dashboard
 		cls()
-		if (time() > 3) create_process("/system/dashboard.p64")
 		if (#workspace > 0) set_workspace(1)
 		return
 	end

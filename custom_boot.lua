@@ -92,6 +92,7 @@ function run_userland_processes(allotment)
 		store("/ram/system/processes.pod", pl)
 		last_processes_list_publish = time()
 	end
+	printh(pod(pl))
 
 
 	while(pl[1] and pl[1].id <= wm_proc_id) do
@@ -110,6 +111,7 @@ function run_userland_processes(allotment)
 	for i=1,#pl do
 		-- to do: observe signal 43? proably don't need that mechanism (temporary high priority)
 		local pri = pl[i].priority
+		if (#pl>2 and i<2) pri=0 --no cpu for dashboard or wallpaper
 		pl[i].cpu_share  = pri
 		total_cpu_share += pri
 	end

@@ -169,8 +169,15 @@ mkdir "/ram/cart/sfx"
 mount("/system/util/dir.lua","/system/util/ls.lua")   
 mount("/system/util/edit.lua","/system/util/open.lua") 
 
---startup dashboard
-create_process("/system/dashboard.p64")
+--startup wallpaper for dashboard
+mkdir("/appdata/system/gaming")
+local distroSettings=fetch("/appdata/system/gaming/settings.pod") or {wallpaper="/system/wallpapers/patchwork.p64"}
+distroSettings.wallpaper="/system/wallpapers/patchwork.p64"
+
+--wallpaper starts dashboard
+create_process(distroSettings.wallpaper, {window_attribs = {show_in_workspace=true,wallpaper=true}})
+
+store("/appdata/system/gaming/settings.pod",distroSettings)
 
 --[[
 if stat(317) > 0 then 
