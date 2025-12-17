@@ -1,5 +1,5 @@
 # Gaming Picotron Distribution
-Similar to SteamOS
+An attempt to make a SteamOS/PS3-like distribution for Picotron.
 
 ## Current development status (as of 20:42, 17/12/2025)
 
