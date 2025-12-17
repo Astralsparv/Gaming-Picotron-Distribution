@@ -179,6 +179,8 @@ create_process(distroSettings.wallpaper, {window_attribs = {show_in_workspace=tr
 
 store("/appdata/system/gaming/settings.pod",distroSettings)
 
+create_process("/system/dashboard.p64",{window_attribs = {show_in_workspace=true}})
+
 --[[
 if stat(317) > 0 then 
 	-- player startup

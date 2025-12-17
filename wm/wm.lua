@@ -1989,7 +1989,6 @@ function create_window(target_ws, attribs)
 			}
 		})]]--
 	end
-	if (win.wallpaper) create_process("/system/dashboard.p64",{window_attribs={show_in_workspace=true}})
 
 	
 	return win	

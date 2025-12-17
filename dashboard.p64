@@ -597,7 +597,7 @@ include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
 
-poke(0x547d, 0xff)
+poke(0x547d, 0x3f)
 window{width=480,height=270,has_frame=false,x=0,y=0,z=-999}
 
 --internetAccess=internet()
