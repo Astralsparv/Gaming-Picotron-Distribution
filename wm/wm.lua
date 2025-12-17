@@ -144,7 +144,7 @@ function generate_head_gui()
 		-- slide infobar / infobar to targets
 		toolbar_y = (toolbar_y * 3 + toolbar_y_target) / 4
 		infobar_y = (infobar_y * 3 + infobar_y_target) / 4
-		
+
 		-- move towards target a pixel so that can reach exact value. also just nicer motion (no single-pixel creep at end; small transitions are faster)
 
 		if (toolbar_y < toolbar_y_target) then
@@ -169,7 +169,7 @@ function generate_head_gui()
 
 
 		-- to do: show_bars should be initial state, and then docked is optional
-		local show_toolbar = ws_gui.show_toolbar 
+		--local show_toolbar = ws_gui.show_toolbar 
 --		local show_infobar = ws_gui.show_infobar
 		local show_infobar = get_show_infobar()
 
@@ -178,15 +178,16 @@ function generate_head_gui()
 		-- auto-showing bars using mouse position is annoying in fullscreen; just for tools / desktop
 		-- fullscreen has ESC, but tools have no other way to reach toolbar (without knowing kbd shortcut)
 		--if (false) then
+		--[[
 		if (ws_gui.style ~= "fullscreen") then
 			--if ((my < 2 and mb == 0) or my < toolbar_y + toolbar_gui.height) then 
 			if ((my < 2 and mb == 0)) then -- don't need second test if doing ws_gui.show_toolbar = true; allows ctrl-1 to immediately hide even while mouse is at top
-				show_toolbar = true
+				show_toolbar = false
 				ws_gui.show_toolbar = true -- experimental: low friction to de-fullscreenify. can turn off at system settings level
 			end
 			-- if ((my >= 270-2 and mb == 0) or my >= infobar_y) show_infobar = true
 		end
-
+		]]--
 		if (screensaver_proc_id) then
 			show_toolbar, show_infobar = false, false
 		end
@@ -1989,6 +1990,7 @@ function create_window(target_ws, attribs)
 			}
 		})]]--
 	end
+	if (win.wallpaper) create_process("/system/dashboard.p64")
 
 	
 	return win	

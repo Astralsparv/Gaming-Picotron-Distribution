@@ -109,14 +109,28 @@ on_event("broadcast",
 
 -- to do: care about who is asking!
 on_event("shutdown",
-	function()
-		_signal(33)
+	function(msg)
+		--goes to dashboard instead
+		if (msg._from>2) then
+			for i=3, #_get_process_list() do
+				_kill_process(msg._from)
+			end
+		else
+			_signal(33)
+		end
 	end
 )
 
 on_event("reboot",
-	function()
-		_signal(34)
+	function(msg)
+		--goes to dashboard instead
+		if (msg._from>5) then
+			for i=3, #_get_process_list() do
+				_kill_process(msg._from)
+			end
+		else
+			_signal(34)
+		end
 	end
 )
 

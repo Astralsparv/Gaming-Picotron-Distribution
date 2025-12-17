@@ -1,12 +1,13 @@
 picotron cartridge // www.picotron.net
 version 2
 
+:: fonts/
 :: gfx/
 :: guis/
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-16 18:59:45",revision=94]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-17 17:39:35",revision=96]]
 function proportions(str)
 	set_draw_target(userdata("u8",1,1))
 	local w,h=print(str,0,0)
@@ -125,7 +126,7 @@ function button(gui,data)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-16 19:17:11",revision=79]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-17 18:41:50",revision=223]]
 mkdir("/games/")
 games=ls("/games/")
 
@@ -159,91 +160,63 @@ y+=h+5
 local object={
 	width=75,height=75,pad=10,
 	image={
-		width=32,
-		height=32
+		width=64,
+		height=64
 	}
 }
 
-local objects={
-	{
-		label="Games",
-		labeltype="embed",
-		id="game",
-		image=get_spr(0),
-		dropped=false,
-		highlighted={
-			bg=29,
-			bg2=29,
-			fg=7,
-			fg2=6,
-		},
-		bg=29,
-		bg2=18,
-		fg=7,
-		fg2=6,
-		dropdown={}
-	},{
-		label="Back",
-		labeltype="embed",
-		image=get_spr(3),
-		id="back",
-		dropped=false,
-		highlighted={
-			bg=29,
-			bg2=29,
-			fg=7,
-			fg2=6,
-		},
-		bg=29,
-		bg2=18,
-		fg=7,
-		fg2=6,
-		out=13,
-		action=function() screen="home" end,
-		dropdown={}
-	}
-}
+local objects={}
 
-for i=1, #games do
-	local meta=fetch_metadata("/games/"..games[i]) or {}
-	add(objects[1].dropdown,{
-		label=meta.title or games[i],
-		labeltype="side",
-		id=games[i],
-		image=meta.icon or get_spr(1),
-		dropped=false,
-		highlighted={
-			bg=29,
-			bg2=29,
-			fg=7,
-			fg2=6,
-		},
-		bg=29,
-		bg2=18,
-		fg=7,
-		fg2=6,
-		action=function() create_process("/games/"..games[i]) end,
-		dropdown={}
-	})
-end
+local rows=2
+local columns=4
 
-local function preProcessObject(obj)
-	local w,h=proportions(obj.label)
-	obj.labelProportions={w=w,h=h}
-	if (obj.image:width()!=32 or obj.image:height()!=32) then
-		local ud=userdata("u8",32,32)
-		set_draw_target(ud)
-		sspr(obj.image,0,0,obj.image:width(),obj.image:height(),0,0,32,32)
-		set_draw_target()
-		obj.image=ud
-	end
-	for i=1, #obj.dropdown do
-		preProcessObject(obj.dropdown[i])
+local xx=240-columns*(object.width+object.pad)/2
+local yy=135-rows*(object.height+object.pad)/2
+
+for x=1, columns do
+	for y=1, rows do
+		add(objects,gui:attach{
+			x=(x-1)*(object.width+object.pad)+xx,
+			y=(y-1)*(object.width+object.pad)+yy,
+			width=object.width,height=object.height,
+			image=get_spr(1),
+			label="unloaded_cartridge",
+			labelcolor=7,
+			imagex=object.width/2-object.image.width/2,
+			imagey=0,
+			draw=function(self)
+				rectfill(0,0,self.width-1,self.height-1,1)
+				spr(self.image,self.imagex,self.imagey)
+				print(self.label,self.labelx,self.labely,self.labelcolor)
+			end
+		})
 	end
 end
 
 for i=1, #objects do
-	preProcessObject(objects[i])
+	local meta=fetch_metadata("/games/"..games[i]) or {}
+	objects[i].label=meta.title or games[i]
+	objects[i].image=meta.icon or get_spr(1)
+	if (objects[i].image:width()!=object.image.width or objects[i].image:height()!=object.image.height) then
+		local ud=userdata("u8",object.image.width,object.image.height)
+		set_draw_target(ud)
+		sspr(objects[i].image,0,0,nil,nil,0,0,object.image.width,object.image.height)
+		set_draw_target()
+		objects[i].image=ud
+	end
+	objects[i].highlighted={
+		bg=29,
+		bg2=29,
+		fg=7,
+		fg2=6
+	}
+	objects[i].bg=29
+	objects[i].bg2=18
+	objects[i].fg=7
+	objects[i].fg2=6
+	objects[i].game=games[i]
+	local w,h=proportions(objects[i].label)
+	objects[i].labelx,objects[i].labely=object.width/2-w/2,object.height-10
 end
 
 local selected=""
@@ -251,58 +224,11 @@ local internetCheck=time()
 
 function update_games()
 	gui:update_all()
-	if (btnp(0)) selector.x-=1
-	if (btnp(1)) selector.x+=1
-	if (btnp(2)) selector.y-=1
-	if (btnp(3)) selector.y+=1
-	if (selector.x>#objects-1) selector.x=0
-	if (selector.x<0) selector.x=#objects-1
-	local i=selector.x+1
-	if (objects[i].dropped) then
-		if (selector.y>#objects[i].dropdown) then
-			selector.y=#objects[i].dropdown
-		end
-		if (selector.y<0) then
-			selector.y=0
-		end
-		if (selector.y!=0) then
-			selected=objects[i].dropdown[selector.y].id
-			selectedLoc={selector.x+1,selector.y+1}
-		else
-			selected=objects[i].id
-			selectedLoc={selector.x+1,selector.y+1}
-		end
-	else
-		selector.y=0
-		selected=objects[i].id
-		selectedLoc={selector.x+1,selector.y+1}
-	end
-	local obj
-	if (selectedLoc[2]>1) then
-		obj=objects[selectedLoc[1]].dropdown[selectedLoc[2]-1]
-	else
-		obj=objects[selectedLoc[1]]
-	end
-	if (btnp(5)) then
-		obj.dropped=not obj.dropped
-		if (type(obj.action)=="function") obj:action()
-	end
---	if (time()-internetCheck>15) then
---		internetAccess=internet()
---		internetCheck=time()
---	end
+	
 end
 
 function draw_games()
 	gui:draw_all()
---	local x,y=240-#objects*(object.width+object.pad)/2,135-object.height/2
-	local x,y=240-object.width/2,135-object.height/2
-	x-=selector.x*(object.width+object.pad)
-	y-=selector.y*(object.height+object.pad)
-	for i=1, #objects do
-		drawObject(objects[i],x,y,selected)
-		x+=object.width+object.pad
-	end
 	-- draw time
 	local format = "%Y-%m-%d %H:%M:%S"
 	print(date(format):sub(1,10),5,20,7)
@@ -591,13 +517,13 @@ function draw_home()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-16 19:14:49",revision=40]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-17 18:41:53",revision=43]]
 include "functs.lua"
 include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
 
-poke(0x547d, 0x3f)
+--poke(0x547d, 0x3f)
 window{width=480,height=270,has_frame=false,x=0,y=0,z=-999}
 
 --internetAccess=internet()
@@ -624,9 +550,53 @@ function _draw()
 	end
 end
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45",runtime=24,workspaces={{location="main.lua#7",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#97",workspace_index=1},{location="gui.lua#1",workspace_index=1},{location="functs.lua#29",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 18:42:21",runtime=24,workspaces={{location="main.lua#6",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#74",workspace_index=1},{location="gui.lua#1",workspace_index=1},{location="functs.lua#29",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+:: fonts/.info.pod
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-17 18:42:21"]]
+:: fonts/widesquat.font
+b64$LS1bW3BvZCxhdXRob3I9IkB0aGVseGlub2U1IixjcmVhdGVkPSIyMDI1LTA0LTA3IDEzOjA3
+OjU4IixpY29uPXVzZXJkYXRhKCJ1OCIsMTYsMTYsIjAwMTkxOTE5MTkxOTE5MTkxOTE5MTkwMDAw
+MDAwMDAwMDAxOTA3MDcwNzA3MDcwNzA3MDcwOTE5MDAwMDAwMDAwMDE5MDcwNzA3MDcwNzA3MDcw
+NzA5MDkxOTAwMDAwMDAwMTkwNzA3MDcwNzA3MDcwNzA3MDkwOTA5MTkwMDAwMDAxOTA3MDcwNzA3
+MDcwNzA3MDcwOTA5MDkwOTE5MDAwMDE5MDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MTkwMDAwMTkw
+NzA3MDcwNzA3MDcwNzA3MDcwNzA3MDcxOTAwMDAxOTA3MDcwNzA3MDcwNzA3MDcwNzA3MDcwNzE5
+MDAwMDE5MDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MTkwMDAwMTkwNzE0MTQxNDE0MDcwNzA3MDcw
+NzA3MDcxOTAwMDAxOTA3MDcxNDE0MDcwNzA0MDQwNzA3MDcwNzE5MDAwMDE5MDcwNzE0MTQwNzA0
+MDQwNDA0MDcwNzA3MTkwMDAwMTkwNzA3MTQxNDA3MDcwNDA0MDcwNzA3MDcxOTAwMDAxOTA3MDcx
+NDE0MDcwNzA3MDQwNDA3MDcwNzE5MDAwMDE5MDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MTkwMDAw
+MTkxOTE5MTkxOTE5MTkxOTE5MTkxOTE5MTkxOTAwIiksbG93Y29sX2ljb249ZmFsc2UsbW9kaWZp
+ZWQ9IjIwMjUtMDUtMTQgMTQ6MzA6MTUiLG5vdGVzPSJTaG9ydCBhbmQgc3R1YmJ5IGZvbnQgZm9y
+IHJldHJvXG5zdHlsZSBnYW1lcyIscmV2aXNpb249Mix0aXRsZT0iV2lkZSBTcXVhdCIsdmVyc2lv
+bj0iIl1dbHo0APoFAAArBgAA8oFweHUAAygACAAABAUIBhADkA9wDycAD3EPdwAOBkAPdg9wAAIQ
+DxAPYAAPIAEgDQAfcAAHIA9gBw8nEA4ADQAHBgEQD2APZg9gABwADPAmRzAnQAcFB0AFAgVABQAF
+QCUwBAYHBgQgAQMHAwEgByFAJAcgBQcCBwJAAnABAlATIBVQAgUCwCYABiAVUA8WDz8EAPAJIAYP
+DwMPDA8PBhAPDQ8MBgMPCyAGCwYLGgDwHgNQBiMGIAMmAyALBg8PBgswBgoGcAYDMAeAAyAPDCYD
+IAYrBiAHNiAHCQYDCgYA8QcJByAbChkgCgMHCAcgBgMHCwYgCgkmUADwEgYgBgsPDggGQAMAA0AG
+AAYDEAkGAwYJMAcABzADBgkGA0AA8A8ABiAODxMPGwMPHiAGCwobIAcLBwsHIA4jDiAHKwdYACAD
+CgYA8B0TIA4DDxsPEw4gGwobIEMgCiYHIBsHGyAzCiAfFi8rIA8TDxcPGx8TIA4rB0QAYBMgBhsH
+DgoA8REbIA4DCggHIAo2IDsOICsKBiAvKx8WIBsEGyAbJiAKCMkA8FgjByADJgkgByYHIAYLkAog
+AwZgDhsOIAMHGwcwDhMOIAgOGw4wBgsHDiAOBgoWMA4LCgkHEAMHKyADACMgBgAmAxADGwcLIDMG
+MA8XLyswByswDhsHMAcbBwMgDhsOCSAGIzAHAwQHTwGgCTArDjAbCgYwHY0BYDALFgswG6AA8hIH
+BAMHIA4GBwYOIEMgBwYOBgdADAtABgsGME9-IA9VDyoEAPIGIA9BD38fXQ8_IAEfYw93ASAPEQ9E
+BADwMyAPAg8eDgoIIA4PFx8fDiAPGx8fDgQgDxwPNg93DzYPHCAeDx8ODwogDxwBD38PKg86IAEP
+Zw9jD2cBIA9-D10Pf1wA8BwgDxwUFyABD2MPaw9jASAEDg8fDgRAD1VAAQ9zD2MPcwEgCA8cD38B
+DyIgGgDwEA4CIAEPdx9jATAPBQ9SDyBADxEPKg9EMAEPaw93D2taAPAjAAUABSBPVSAOBA8eDy0P
+JiAPER8hDyUPAiAPDA8eHyAPHCAIDx4IDyQPGiAPTgQBD0UkAFAiD18fEq0A8AMeCA88DxEGIA8Q
+DwwPAg8MDxAdAPAFeh8iDxIgDx4PIAAPAg88IAgJDxAeAFAgLwIPIlIA8AIBCA8MCCAPEg8-DxIP
+Ag8cICEA8FB_BA84IA8CBw8yDwIPMiAKDwIODxAPHCABH0APIA8YIAEPEBgNIAgPOAQPAgkgDzIH
+DxIPeA8YIA96D0IPAg8KD3IgDwkBD0sPbQ9mIA8aDycPIg9zDzIgCQ9KH0kPRm8AEToEAHAaIA8j
+D2IfigDwOA8MAAgPKg9NMA8MDxIPIQ9AIA99D3kPEQ89D10gAQkIDx4PLiAGDyQPfg8mDSAPJA9O
+BA9GCSAPCgkPWg9GDzAgDx4EAw9EuQDwDRQBDyQYIA86D1YPUg8wCCAEDxwEAwYgCA8CAQ9HAUIf
+Ig8myADyAgwPJA9yDzAgBA82DywPJg9kEwA0Qg8wtwDwICMPEiAOD2QPHA8oD3ggBA8CBg8rDxlA
+Dg0IMA8KAg8SBDAECg8VDw0wBA8MBg4gYQAgFAS0AfATMAgOGCAIAQ8iDyAMIAEoASAND34MDxQP
+EiAEAQ8kDyIPMn0BQAEIIAkOABANpgCxfA8SDQggAS8gASDoAEAkDyANHgSxJg0PDCABCw0MDyY9
+AAGeAUEiDyQLGADxAw8iDy0PMA8MIA8cCAEIBCAfKhgAMA8cAA4A8AcUBQ8kBCAIARgEMAUQASAB
+Cw8oDQ8smQDwCjAPXgggKw0OIA0fJA9ED0IgDwIDFwUgARs_ABIChAFgMAgBCB8qNgDBFAgNIAkA
+AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
+Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
+DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 18:42:21"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -639,16 +609,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-16 19:24:45"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-17 18:42:21"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 18:42:21"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-16 19:24:45"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 18:42:21"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO

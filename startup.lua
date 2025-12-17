@@ -70,13 +70,13 @@ if fstat("/desktop/readme.txt") then
 	if (not mm or not mm.icon or mm.pod_format ~= "raw") cp("/system/misc/readme.txt", "/desktop/readme.txt")
 end
 
-
+--[[
 -- present working cartridge
 local num = 0
 local num=0
 while (fstat("/untitled"..num..".p64") and num < 64) num += 1
 store("/ram/system/pwc.pod", "/untitled"..num..".p64")
-
+]]
 
 -- custom startup could opt to run different window / program manager
 create_process("/system/pm/pm.lua")
@@ -152,7 +152,7 @@ if (system_meta.version ~= system_version) then
 end
 ------------------------------------------------------------------------------------------------
 
-
+--[[
 -- starting userland programs (with blank untitled files)
 
 -- open editors and create default cart layout
@@ -163,7 +163,7 @@ mkdir "/ram/cart/sfx"
 -- default file name are used by the automatic resource loader
 -- (in many cases only these 4 files are needed in a cartridge)
 
-
+]]
 -- aliases
 
 mount("/system/util/dir.lua","/system/util/ls.lua")   
@@ -172,14 +172,14 @@ mount("/system/util/edit.lua","/system/util/open.lua")
 --startup wallpaper for dashboard
 mkdir("/appdata/system/gaming")
 local distroSettings=fetch("/appdata/system/gaming/settings.pod") or {wallpaper="/system/wallpapers/patchwork.p64"}
-distroSettings.wallpaper="/system/wallpapers/patchwork.p64"
+distroSettings.wallpaper="/system/wallpapers/trinkets.p64"
 
 --wallpaper starts dashboard
-create_process(distroSettings.wallpaper, {window_attribs = {show_in_workspace=true,wallpaper=true}})
+create_process(distroSettings.wallpaper, {window_attribs = {workspace = "new", desktop_path = "/desktop", wallpaper=true, show_in_workspace=true}})
 
 store("/appdata/system/gaming/settings.pod",distroSettings)
 
-create_process("/system/dashboard.p64",{window_attribs = {show_in_workspace=true}})
+--create_process("/system/dashboard.p64",{window_attribs = {show_in_workspace=true}})
 
 --[[
 if stat(317) > 0 then 
