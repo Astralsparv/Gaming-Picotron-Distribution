@@ -2102,10 +2102,14 @@ function _draw()
 	-- cls(10) -- debug
 
 	local awin = get_active_window()
-
+	if (awin==nil and #workspace>1) then
+		for i=#workspace, 2 do
+			deli(workspace,i)
+		end
+		set_workspace(1)
+	end
 
 	if (not ws_gui or #workspace == 0) then
-		--create the dashboard
 		cls()
 		if (#workspace > 0) set_workspace(1)
 		return
