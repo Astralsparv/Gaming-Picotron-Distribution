@@ -7,7 +7,7 @@ version 2
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-17 19:30:39",revision=101]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-18 11:13:24",revision=104]]
 function proportions(str)
 	set_draw_target(userdata("u8",1,1))
 	local w,h=print(str,0,0)
@@ -111,7 +111,7 @@ function wrapText(text,width)
 	return res,nl,fwidth
 end
 :: gui.lua
---[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-17 20:05:03",revision=34]]
+--[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-18 11:51:33",revision=41]]
 function text(gui,data)
 	local width,height=proportions(data.label)
 	width+=1
@@ -167,7 +167,7 @@ function checkbox(gui,data)
 	return width,height,o
 end
 
-function button(gui,data)
+function button(gui,data,extra)
 	local width,height=proportions(data.label)
 	data.rounding=data.rounding or 0
 	data.paddingw=data.paddingw or 1
@@ -188,7 +188,7 @@ function button(gui,data)
 		hovering=false,
 		draw=function(self)
 			local bg=self.bg
-			if (self.hovering) bg=self.bg2
+			if (self.hovering or self.selected) bg=self.bg2
 			rrectfill(0,0,self.width-1,self.height-1,data.rounding,bg)
 			print(self.label,self.paddingw/2+1,self.paddingh/2+1,self.fg)
 			self.hovering=false
@@ -197,10 +197,15 @@ function button(gui,data)
 		tap=data.tap,
 		cursor="pointer"
 	}
+	if (extra) then
+		for k,v in pairs(extra) do
+			o[k]=v
+		end
+	end
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-17 20:06:46",revision=366]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-18 11:51:10",revision=463]]
 mkdir("/games/")
 games=ls("/games/")
 
@@ -253,7 +258,11 @@ local object={
 	}
 }
 
-local objects={}
+local objects={
+{}, --top bar
+{}, --game row 1
+{}  --game row 2
+}
 
 local rows=2
 local columns=4
@@ -262,7 +271,7 @@ local xx=240-columns*(object.width+object.pad)/2
 local yy=135-rows*(object.height+object.pad)/2
 
 x,y=xx,yy-15
-local w,h=button(gui,{
+local w,h,o=button(gui,{
 	x=x,
 	y=y,
 	label="\014\^w\^tEXIT",
@@ -277,9 +286,56 @@ local w,h=button(gui,{
 	end
 })
 
+add(objects[1],o)
+
+function decomp(table, indent, seen)
+    seen = seen or {}
+    if seen[table] then
+        return "<cycle>"
+    end
+    seen[table] = true
+    
+    res=""
+    indent=indent or 0
+    local pad=""
+    for i=1, indent do
+    pad..=" "
+    end
+    for key,val in pairs(table) do
+    local k=key
+    if (type(k)=="number") then
+        k="["..k.."]"
+    end
+    if (type(val)=="table") then
+        res..=k.."={\n"
+        res..=pad..decomp(val,indent+1,seen).."\n"
+        res..="},"
+    else
+        local v=val
+        if (type(v)=="string") then
+            v="\""..v.."\""
+        end
+        res..=pad..k.."="..tostr(v)..","
+    end
+        res..="\n"
+    end
+    res=res:sub(1,#res-2)
+    return res
+end
+
+local function objectPosition(x,y,vx,vy)
+	x+=vx
+	if (x==0) x=#objects[y]
+	if (x>#objects[y]) x=1
+	y+=vy
+	if (y==0) x=#objects
+	if (y>#objects) y=1
+	return {x=x,y=y}
+end
+
 for x=1, columns do
 	for y=1, rows do
-		add(objects,gui:attach{
+		objects[y+1][x]=gui:attach{
 			x=(x-1)*(object.width+object.pad)+xx,
 			y=(y-1)*(object.width+object.pad)+yy,
 			width=object.width,height=object.height,
@@ -293,7 +349,7 @@ for x=1, columns do
 			draw=function(self)
 				local bg2=theming.bg2
 				local bg=theming.bg
-				if (self.hovering) then
+				if (self.hovering or self.selected) then
 					bg,bg2=theming.highlighted.bg,theming.highlighted.bg2
 				end
 				rrectfill(0,0,self.width-1,self.height-1,8,bg2)
@@ -312,43 +368,78 @@ for x=1, columns do
 			tap=function(self)
 				create_process(self.game)
 			end,
-			hover=function(self) self.hovering=true end
-		})
+			hover=function(self) self.hovering=true end,
+			
+			left=objectPosition(x,y,-1,0),
+			right=objectPosition(x,y,1,0),
+			up=objectPosition(x,y,0,-1),
+			down=objectPosition(x,y,0,1),
+		}
 	end
 end
+--[[
+store("/desktop/decomp.txt",decomp(objects))
+store("/distributions/bootinto.txt","picotron0_2_1e")
+send_message(2,{event="reboot"})
+]]
 
-for i=1, #objects do
+local row=2
+for i=1, flr(min(8,#games)) do
+	if (i==5) row=3
 	local meta=fetch_metadata("/games/"..games[i]) or {}
 	local label=wrapText(meta.title or games[i],object.width)
-	objects[i].image=meta.icon or get_spr(1)
-	if (objects[i].image:width()!=object.image.width or objects[i].image:height()!=object.image.height) then
+	local o=objects[row][i-(row-2)*4]
+	o.image=meta.icon or get_spr(1)
+	if (o.image:width()!=object.image.width or o.image:height()!=object.image.height) then
 		local ud=userdata("u8",object.image.width,object.image.height)
 		set_draw_target(ud)
-		sspr(objects[i].image,0,0,nil,nil,0,0,object.image.width,object.image.height)
+		sspr(o.image,0,0,nil,nil,0,0,object.image.width,object.image.height)
 		set_draw_target()
-		objects[i].image=ud
+		o.image=ud
 	end
-	objects[i].highlighted={
+	o.highlighted={
 		bg=29,
 		bg2=29,
 		fg=7,
 		fg2=6
 	}
-	objects[i].bg=29
-	objects[i].bg2=18
-	objects[i].fg=7
-	objects[i].fg2=6
-	objects[i].game="/games/"..games[i]
+	o.bg=29
+	o.bg2=18
+	o.fg=7
+	o.fg2=6
+	o.game="/games/"..games[i]
 	label=split(label,"\n")
 	local processed={}
 	for i=1, #label do
 		local w,h=proportions(label[i])
 		add(processed,{label=label[i],w=w,h=h})
 	end
-	objects[i].label=processed
---	local w,h=proportions(objects[i].label)
---	objects[i].labelx,objects[i].labely=object.width/2-w/2,object.height-h
+	o.label=processed
 end
+
+local function selectObject(pos)
+	if (pos) then
+		printh(pos.x.." "..pos.y)
+		objects[pos.y][pos.x].selected=true
+	else
+		notify("no pos")
+	end
+end
+
+for i=1, #objects do
+	for j=1, #objects[i] do
+		objects[i][j].selected=false
+		objects[i][j].update=function(self)
+			if (self.selected) then
+				if (btnp(0)) self.selected=false selectObject(self.left)
+				if (btnp(1)) self.selected=false selectObject(self.right)
+				if (btnp(2)) self.selected=false selectObject(self.up)
+				if (btnp(3)) self.selected=false selectObject(self.down)
+			end
+		end
+	end
+end
+objects[2][1].selected=true
 
 local selected=""
 local internetCheck=time()
@@ -373,7 +464,7 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-16 19:24:45",revision=426]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-18 11:45:52",revision=427]]
 local gui=create_gui{}
 
 local selector={
@@ -648,7 +739,7 @@ function draw_home()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-17 20:07:12",revision=52]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 11:44:56",revision=58]]
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
 
@@ -684,9 +775,9 @@ function _draw()
 	end
 end
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#137",workspace_index=1},{location="gui.lua#80",workspace_index=1},{location="functs.lua#58",workspace_index=1},{location="gfx/0.gfx",workspace_index=2},{location="fonts/thin.font",workspace_index=7}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#79",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#19",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-17 20:07:12"]]
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-18 11:51:33"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -773,7 +864,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -786,16 +877,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-17 20:07:12"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-18 11:51:33"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-17 20:07:12"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
