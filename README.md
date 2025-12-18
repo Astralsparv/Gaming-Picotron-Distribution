@@ -22,6 +22,10 @@ Game menu:
 * displays first 8 games in `/games`
 * lets you open games
 
+Within games:
+
+* windowed games are their own workspace (no wallpaper, for now?)
+
 ## Credits
 
 @thelxinoe5's widesquat font
