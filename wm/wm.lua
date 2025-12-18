@@ -44,6 +44,7 @@ local _set_userland_clipboard_text = _set_userland_clipboard_text
 local _get_host_clipboard_text = _get_host_clipboard_text
 
 local last_draw_window = nil
+local controllerPointer=false
 
 function show_reported_error() -- happens when error is reported
 	open_infobar()
@@ -2692,6 +2693,21 @@ function _update()
 		start_my = my
 	end
 
+	if (controllerPointer) then --controller mode
+		local cursorSensitivity=2.5
+
+		mx+=((peek(0x005581) - (peek(0x005580)))/255)*cursorSensitivity
+		my+=((peek(0x005583) - (peek(0x005582)))/255)*cursorSensitivity
+		mx=mid(0,mx,480)
+		my=mid(0,my,270)
+		mb=0
+		if (mb==0) then
+			if (btn(4)) mb+=1
+			if (btn(5)) mb+=2
+		end
+		send_message(3,{event="mouse",mx=mx,my=my,mb=mb})
+	end
+
 
 	-- update visibility; send message
 
@@ -2986,7 +3002,6 @@ function _update()
 		if (mx ~= last_mx or my ~= last_my or mb ~= last_mb or win.send_mouse_update) and
 			not (mb == 2 and win.parent == tooltray_gui) -- mb2 reserved for context menu for widgets 
 		then
-
 			last_input_activity_t = time() 
 
 			--printh("mouse event "..pod{proc_id = win.proc_id, mx, my, mb})
@@ -3004,32 +3019,6 @@ function _update()
 						mb = (win == win2 and win == pointer_el) and mb or 0
 					})
 			end
---[[
-		else
-			mx,my = last_mx,last_my
-			mb=0
-			_printh(mx.." "..my)
-			--kernel controller cursor
-			mx+=((btn(1) or 0) - (btn(0) or 0))/255
-			my+=((btn(3) or 0) - (btn(2) or 0))/255
-			_printh(mx.." "..my)
-			if (btn(4)) mb+=1
-			if (btn(5)) mb+=2
-
-			last_input_activity_t = time() 
-
-			--printh("mouse event "..pod{proc_id = win.proc_id, mx, my, mb})
-
-			win.send_mouse_update = nil
-
-			-- every window can read the mouse position, but only the active window can read mouse button state.
-			-- dorky iterator for ws_gui and tooltray_gui
-			local pointer_el = head_gui:get_pointer_element()
-			if (@0x547c > 0) pointer_el = win -- video mode set -> assume pointing at active window
-			for i=1,#ws_gui.child + #tooltray_gui.child do
-				local win2 = i <= #ws_gui.child and ws_gui.child[i] or tooltray_gui.child[i - #ws_gui.child]
-				send_message(2, {event="mouse",mx=mx,my=my,mb=mb})
-			end]]
 		end
 		last_mx, last_my, last_mb = mx, my, mb
 	end
@@ -4428,5 +4417,9 @@ end
 	
 end
 
-
-
+--controller controls the mouse pointer
+on_event("controllerPointer",function(msg)
+	if (msg._from<6) then
+		controllerPointer=msg.on
+	end
+end)

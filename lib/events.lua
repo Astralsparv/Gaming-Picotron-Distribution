@@ -728,7 +728,7 @@ do
 	on_event("mouse", function(msg)
 		mouse_x = msg.mx
 		mouse_y = msg.my
-		mouse_b = msg.mb	
+		mouse_b = msg.mb
 	end)
 
 	on_event("mousewheel", function(msg)
