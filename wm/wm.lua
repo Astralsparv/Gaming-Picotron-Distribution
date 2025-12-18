@@ -2964,6 +2964,7 @@ function _update()
 		_signal(16) -- placeholder mechanism
 	end
 
+	if (key("alt") and keyp("t")) create_process("/system/apps/terminal.lua")
 	--================================================================================================================
 
 	-- window focus messages
