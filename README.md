@@ -18,7 +18,7 @@ XMB menu:
 
 Game menu:
 
-* mouse only
+* controller & mouse support
 * displays first 8 games in `/games`
 * lets you open games
 

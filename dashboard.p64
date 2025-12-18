@@ -205,10 +205,11 @@ function button(gui,data,extra)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-18 11:51:10",revision=463]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-18 12:44:35",revision=541]]
 mkdir("/games/")
 games=ls("/games/")
 
+local canswitchobj=true
 local theming={
 	highlighted={
 		bg=29,
@@ -325,11 +326,13 @@ end
 
 local function objectPosition(x,y,vx,vy)
 	x+=vx
+	y+=vy
+	if (y==0) y=#objects
+	if (y>#objects) y=1
+	
 	if (x==0) x=#objects[y]
 	if (x>#objects[y]) x=1
-	y+=vy
-	if (y==0) x=#objects
-	if (y>#objects) y=1
+	
 	return {x=x,y=y}
 end
 
@@ -369,11 +372,6 @@ for x=1, columns do
 				create_process(self.game)
 			end,
 			hover=function(self) self.hovering=true end,
-			
-			left=objectPosition(x,y,-1,0),
-			right=objectPosition(x,y,1,0),
-			up=objectPosition(x,y,0,-1),
-			down=objectPosition(x,y,0,1),
 		}
 	end
 end
@@ -418,11 +416,11 @@ for i=1, flr(min(8,#games)) do
 end
 
 local function selectObject(pos)
-	if (pos) then
-		printh(pos.x.." "..pos.y)
-		objects[pos.y][pos.x].selected=true
-	else
-		notify("no pos")
+	if (canswitchobj) then
+		if (pos) then
+			objects[pos.y][pos.x].selected=true
+			canswitchobj=false
+		end
 	end
 end
 
@@ -430,15 +428,29 @@ for i=1, #objects do
 	for j=1, #objects[i] do
 		objects[i][j].selected=false
 		objects[i][j].update=function(self)
-			if (self.selected) then
+			if (canswitchobj and self.selected) then
 				if (btnp(0)) self.selected=false selectObject(self.left)
 				if (btnp(1)) self.selected=false selectObject(self.right)
 				if (btnp(2)) self.selected=false selectObject(self.up)
 				if (btnp(3)) self.selected=false selectObject(self.down)
+				if (btnp(5)) self:tap()
 			end
 		end
 	end
 end
+
+--calculate obj positions to go to with dpad
+
+for y=1, #objects do
+	for x=1, #objects[y] do
+		local o=objects[y][x]
+		o.left=objectPosition(x,y,-1,0)
+		o.right=objectPosition(x,y,1,0)
+		o.up=objectPosition(x,y,0,-1)
+		o.down=objectPosition(x,y,0,1)
+	end
+end
+
 objects[2][1].selected=true
 
 local selected=""
@@ -446,7 +458,7 @@ local internetCheck=time()
 
 function update_games()
 	gui:update_all()
-	
+	canswitchobj=true
 end
 
 function draw_games()
@@ -739,7 +751,7 @@ function draw_home()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 11:44:56",revision=58]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 12:44:39",revision=62]]
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
 
@@ -775,9 +787,9 @@ function _draw()
 	end
 end
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#79",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#19",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 12:44:39",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#127",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#19",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-18 11:51:33"]]
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-18 12:44:39"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -864,7 +876,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 12:44:39"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -877,16 +889,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-18 11:51:33"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-18 12:44:39"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 12:44:39"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 11:51:33"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 12:44:39"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
