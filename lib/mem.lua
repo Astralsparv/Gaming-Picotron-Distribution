@@ -76,5 +76,6 @@ function map(ud, b, ...)
 	end
 end
 
+-- poke a custom volume
 
-
+poke(0x5533a,fetch("/appdata/system/gaming/settings.pod").volume)

@@ -171,8 +171,23 @@ mount("/system/util/edit.lua","/system/util/open.lua")
 
 --startup wallpaper for dashboard
 mkdir("/appdata/system/gaming")
-local distroSettings=fetch("/appdata/system/gaming/settings.pod") or {wallpaper="/system/wallpapers/patchwork.p64"}
-distroSettings.wallpaper="/system/wallpapers/trinkets.p64"
+
+local defaultSettings={
+	wallpaper="/system/wallpapers/patchwork.p64",
+	volume=0x40, --64, default for PT
+	overlayCombination={
+		{
+			time=1.5,
+			pressed={0x73}
+		}
+	}
+}
+
+local distroSettings=fetch("/appdata/system/gaming/settings.pod") or{}
+
+for k,v in pairs(defaultSettings) do
+	if (distroSettings[k]==nil) distroSettings[k]=v
+end
 
 --wallpaper starts dashboard
 create_process(distroSettings.wallpaper, {window_attribs = {workspace = "new", desktop_path = "/desktop", wallpaper=true, show_in_workspace=true}})

@@ -46,3 +46,41 @@ unpack = table.unpack
 pack = table.pack
 
 
+--use a system volume, also ensure pokes are affected by cartridge_volume
+
+local cartridge_volume=fetch("/appdata/system/gaming/settings.pod").volume
+cartridge_volume=mid(0,cartridge_volume,255) --max is 255/0xff
+cartridge_volume=cartridge_volume/255 --convert to decimal, multiply anything by it to factor in volume!
+
+local _sfx=sfx
+sfx=function(a,b,special_case_mix_volume,normal_mix_volume,...)
+	if (a==-4) then
+		if (special_case_mix_volume) then
+			special_case_mix_volume=special_case_mix_volume*cartridge_volume
+		end
+	else
+		if (normal_mix_volume) then
+			normal_mix_volume=normal_mix_volume*cartridge_volume
+		end
+	end
+    return _sfx(a,special_case_mix_volume,c,normal_mix_volume,...)
+end
+
+local _note=note
+note=function(a,b,volume,...)
+	if (volume) then
+		printh("fed: "..volume)
+		volume=volume*cartridge_volume
+		printh("volume factor: "..volume)
+		printh("new: "..volume)
+	end
+    return _note(a,b,volume,...)
+end
+
+local _poke=poke
+poke=function(a,b,...)
+	if (a==0x5533a) then
+		b*=cartridge_volume
+	end
+	return _poke(a,b,...)
+end

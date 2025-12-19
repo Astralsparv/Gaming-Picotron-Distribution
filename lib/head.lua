@@ -864,6 +864,10 @@ end
 -- to do: move to process.c
 local pal,memset,poke,color,fillp,srand = pal,memset,poke,color,fillp,srand
 
+--for poking 0x5533a/0x55338 (volume)
+local cartridge_volume=fetch("/appdata/system/gaming/settings.pod").volume
+cartridge_volume=mid(0,cartridge_volume,255) --max is 255/0xff
+
 function reset()
 
 	-- reset palette (including scanline palette selection, rgb palette)
@@ -912,8 +916,8 @@ function reset()
 
 	-- audio 
 	poke(0x5538,
-		0x40,0x40, -- (1.0) global volume for sfx, music
-		0x40,0x40, -- (1.0) default volume parameters when not given to sfx(), music()
+		cartridge_volume,cartridge_volume, -- global volume for sfx, music
+		cartridge_volume,cartridge_volume, -- default volume parameters when not given to sfx(), music()
 		0x03,0x03  -- base address for sfx, music (0x30000, 0x30000)
 	)
 

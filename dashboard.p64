@@ -783,6 +783,48 @@ end
 
 :: main.lua
 --[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 19:23:28",revision=64]]
+
+--[[
+	save structure (dashboard and system stuff)
+	
+	/appdata/system/gaming/..
+		settings.pod:
+			wallpaper (string, filepath) -- for dashboard
+			volume (number) -- system volume, where changeable
+			overlay button thing{ (table, example given) -- button combination for opening the overlay in-game
+				{
+					time=0.5,
+					pressed={0x73}
+				},
+				{
+					time=0.5,
+					pressed={}
+				},
+				{
+					time=0.5,
+					pressed={0x73}
+				}
+			}
+		games/..
+			bbs/.. --based on bbs_id, if no profile set
+				bbs_id_here/..
+					settings.pod:
+						controllerPointer (bool) -- use the controller as a cursor 
+						networkAccess (bool) -- access to network (online fetch, sockets)
+					cursor.pod: --controllerPointer
+						sensitivityX (number) -- sensitivity for horizontal movement
+						sensitivityY (number) -- sensitivity for vertical movement
+			profiles/.. --based on metadata value 'profile_id_here', has a default profile of 'default' if nil
+				profile_id_here/..
+					settings.pod:
+						controllerPointer (bool) -- use the controller as a cursor 
+						networkAccess (bool) -- access to network (online fetch, sockets)
+					cursor.pod: --controllerPointer
+						sensitivityX (number) -- sensitivity for horizontal movement
+						sensitivityY (number) -- sensitivity for vertical movement
+
+]]
+
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
 
