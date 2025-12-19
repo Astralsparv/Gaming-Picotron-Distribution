@@ -8,6 +8,21 @@ version 2
 :: sfx/
 :: functs.lua
 --[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-18 11:13:24",revision=104]]
+
+function gameSettings(path)
+	local meta=fetch_metadata(path) or {}
+	if (meta.bbs_id) then
+		if (fstat("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")) then
+			return fetch("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")
+		end
+	elseif (meta.gaming_profile) then
+		if (fstat("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")) then
+			return fetch("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")
+		end
+	end
+	return fetch("/appdata/system/gaming/profiles/preset/default.pod")
+end
+
 function proportions(str)
 	set_draw_target(userdata("u8",1,1))
 	local w,h=print(str,0,0)
@@ -389,7 +404,7 @@ for x=1, columns do
 			end,
 			tap=function(self)
 				create_process(self.game,{window_attribs={workspace="new"}}) --windowed games would appear in dashboard without
-				--send_message(3,{event="controllerPointer",on=true})
+				send_message(3,{event="controllerPointer",data=gameSettings(self.game).controllerPointer})
 			end,
 			hover=function(self) self.hovering=true end,
 		}
@@ -784,47 +799,6 @@ end
 :: main.lua
 --[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 19:23:28",revision=64]]
 
---[[
-	save structure (dashboard and system stuff)
-	
-	/appdata/system/gaming/..
-		settings.pod:
-			wallpaper (string, filepath) -- for dashboard
-			volume (number) -- system volume, where changeable
-			overlay button thing{ (table, example given) -- button combination for opening the overlay in-game
-				{
-					time=0.5,
-					pressed={0x73}
-				},
-				{
-					time=0.5,
-					pressed={}
-				},
-				{
-					time=0.5,
-					pressed={0x73}
-				}
-			}
-		games/..
-			bbs/.. --based on bbs_id, if no profile set
-				bbs_id_here/..
-					settings.pod:
-						controllerPointer (bool) -- use the controller as a cursor 
-						networkAccess (bool) -- access to network (online fetch, sockets)
-					cursor.pod: --controllerPointer
-						sensitivityX (number) -- sensitivity for horizontal movement
-						sensitivityY (number) -- sensitivity for vertical movement
-			profiles/.. --based on metadata value 'profile_id_here', has a default profile of 'default' if nil
-				profile_id_here/..
-					settings.pod:
-						controllerPointer (bool) -- use the controller as a cursor 
-						networkAccess (bool) -- access to network (online fetch, sockets)
-					cursor.pod: --controllerPointer
-						sensitivityX (number) -- sensitivity for horizontal movement
-						sensitivityY (number) -- sensitivity for vertical movement
-
-]]
-
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
 
@@ -862,7 +836,7 @@ end
 
 on_event("gained_focus",
 	function()
-		send_message(3,{event="controllerPointer",on=false})
+		send_message(3,{event="controllerPointer",data={active=false}})
 	end
 )
 

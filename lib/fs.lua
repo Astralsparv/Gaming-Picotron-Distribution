@@ -59,6 +59,21 @@ do
 	-- fileview can be extended via request_file_access messages
 	local fileview = unpod(pod(_env().fileview))
 
+	local function _fetchGameSettings(path)
+		local meta=fetch_metadata(path) or {}
+		if (meta.bbs_id) then
+			if (fstat("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")) then
+				return fetch("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")
+			end
+		elseif (meta.gaming_profile) then
+			if (fstat("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")) then
+				return fetch("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")
+			end
+		end
+		return fetch("/appdata/system/gaming/profiles/preset/default.pod")
+	end
+
+	local _gameSettings={networkAccess=true} --temporary, this is redefined once fetch_metadata is created
 
 	--[[--------------------------------------------------------------------------------------------------------------------------------
 
@@ -1021,6 +1036,8 @@ do
 
 	function fetch_metadata(filename_p)
 		if (type(filename_p) ~= "string") return nil
+		--block network access
+		if (not (_gameSettings.networkAccess) and _gameSettings:prot()!=nil) return nil
 		local filename = _userland_to_kernal_path(filename_p)
 
 		if (not filename) then
@@ -1047,6 +1064,22 @@ do
 		return _fetch_metadata(filename)
 	end
 
+	local function _fetchGameSettings(path)
+		local meta=fetch_metadata(path) or {}
+		if (meta.bbs_id) then
+			if (fstat("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")) then
+				return fetch("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")
+			end
+		elseif (meta.gaming_profile) then
+			if (fstat("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")) then
+				return fetch("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")
+			end
+		end
+		return fetch("/appdata/system/gaming/profiles/preset/default.pod")
+	end
+
+	local _gameSettings=_fetchGameSettings(env().argv[0])
+	_fetchGameSettings=nil
 
 
 	-- fetch and store can be passed locations instead of filenames
@@ -1056,6 +1089,7 @@ do
 
 		if (type(location) != "string") return nil, nil, "location is not a string"
 
+		if (not (_gameSettings.networkAccess) and _gameSettings:prot()!=nil) return nil, nil, "network access disabled"
 		if (type(options) ~= "table") options = {}
 
 		local filename, hash_part = table.unpack(_split(location, "#", false))

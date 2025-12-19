@@ -44,7 +44,7 @@ local _set_userland_clipboard_text = _set_userland_clipboard_text
 local _get_host_clipboard_text = _get_host_clipboard_text
 
 local last_draw_window = nil
-local controllerPointer=false
+local controllerPointer={active=false}
 
 function show_reported_error() -- happens when error is reported
 	open_infobar()
@@ -2693,11 +2693,9 @@ function _update()
 		start_my = my
 	end
 
-	if (controllerPointer) then --controller mode
-		local cursorSensitivity=2.5
-
-		mx+=((peek(0x005581) - (peek(0x005580)))/255)*cursorSensitivity
-		my+=((peek(0x005583) - (peek(0x005582)))/255)*cursorSensitivity
+	if (controllerPointer.active) then --controller mode
+		mx+=((peek(0x005581) - (peek(0x005580)))/255)*controllerPointer.sensitivityX
+		my+=((peek(0x005583) - (peek(0x005582)))/255)*controllerPointer.sensitivityY
 		mx=mid(0,mx,480)
 		my=mid(0,my,270)
 		mb=0
@@ -4419,8 +4417,9 @@ end
 end
 
 --controller controls the mouse pointer
+--event sends info (active, sensitivityX, sensitivityY)
 on_event("controllerPointer",function(msg)
 	if (msg._from<6) then
-		controllerPointer=msg.on
+		controllerPointer=msg.data
 	end
 end)

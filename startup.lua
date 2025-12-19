@@ -195,7 +195,7 @@ if (not fstat("/appdata/system/gaming/profiles/preset/default.pod")) then
 	store("/appdata/system/gaming/profiles/preset/default.pod",{
 		networkAccess=true,
 		controllerPointer={
-			active=true,
+			active=false,
 			sensitivityX=2.5,
 			sensitivityY=2.5,
 		}

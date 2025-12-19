@@ -19,6 +19,22 @@ local _read_socket = _read_socket
 local _write_socket = _write_socket
 local _sock_status = _sock_status
 local _accept_socket = _accept_socket
+local function _fetchGameSettings(path)
+	local meta=fetch_metadata(path) or {}
+	if (meta.bbs_id) then
+		if (fstat("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")) then
+			return fetch("/appdata/system/gaming/profiles/bbs/"..meta.bbs_id..".pod")
+		end
+	elseif (meta.gaming_profile) then
+		if (fstat("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")) then
+			return fetch("/appdata/system/gaming/profiles/preset/"..meta.gaming_profile..".pod")
+		end
+	end
+	return fetch("/appdata/system/gaming/profiles/preset/default.pod")
+end
+
+local _gameSettings=_fetchGameSettings(env().argv[0])
+_fetchGameSettings=nil
 
 -- to do: should [also] happen when garbage collected 
 -- (or just time out; don't usually want long idle connections on backend anyway)
@@ -32,6 +48,9 @@ end
 function Socket:new(attribs)
 
 	if (type(attribs) == "string") attribs = {addr = attribs}
+
+	-- block network!
+	if (not _gameSettings.networkAccess) return nil, "network access disabled"
 
 	-- need an address. "*" for server?
 	if (not attribs.addr) return nil, "no address specified"
