@@ -111,9 +111,16 @@ on_event("broadcast",
 on_event("shutdown",
 	function(msg)
 		--goes to dashboard instead
-		if (msg._from>2) then
-			for i=3, #_get_process_list() do
-				_kill_process(msg._from)
+		if (msg._from>5) then
+			local pl=_get_process_list()
+			for i=4, #pl do
+				if (pl[i].id==msg._from-1) then --why is it -1?
+					if (pl[i].name=="terminal") then
+						_signal(33)
+						return
+					end
+				end
+				_kill_process(pl[i].id)
 			end
 		else
 			_signal(33)
@@ -125,8 +132,15 @@ on_event("reboot",
 	function(msg)
 		--goes to dashboard instead
 		if (msg._from>5) then
-			for i=3, #_get_process_list() do
-				_kill_process(msg._from)
+			local pl=_get_process_list()
+			for i=4, #pl do
+				if (pl[i].id==msg._from-1) then --why is it -1?
+					if (pl[i].name=="terminal") then
+						_signal(34)
+						return
+					end
+				end
+				_kill_process(pl[i].id)
 			end
 		else
 			_signal(34)
