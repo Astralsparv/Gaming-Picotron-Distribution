@@ -169,11 +169,10 @@ mkdir "/ram/cart/sfx"
 mount("/system/util/dir.lua","/system/util/ls.lua")   
 mount("/system/util/edit.lua","/system/util/open.lua") 
 
---startup wallpaper for dashboard
+--settings
 mkdir("/appdata/system/gaming")
-
 local defaultSettings={
-	wallpaper="/system/wallpapers/patchwork.p64",
+	wallpaper="/system/wallpapers/trinkets.p64",
 	volume=0x40, --64, default for PT
 	overlayCombination={
 		{
@@ -183,12 +182,25 @@ local defaultSettings={
 	}
 }
 
-local distroSettings=fetch("/appdata/system/gaming/settings.pod") or{}
-
+local distroSettings=fetch("/appdata/system/gaming/settings.pod") or {}
 for k,v in pairs(defaultSettings) do
 	if (distroSettings[k]==nil) distroSettings[k]=v
 end
 
+--gaming settings (default profile included)
+mkdir("/appdata/system/gaming/profiles")
+mkdir("/appdata/system/gaming/profiles/bbs/") --metadata: bbs_id
+mkdir("/appdata/system/gaming/profiles/preset/") --metadata: profile_id
+if (not fstat("/appdata/system/gaming/profiles/preset/default.pod")) then
+	store("/appdata/system/gaming/profiles/preset/default.pod",{
+		networkAccess=true,
+		controllerPointer={
+			active=true,
+			sensitivityX=2.5,
+			sensitivityY=2.5,
+		}
+	})
+end
 --wallpaper starts dashboard
 create_process(distroSettings.wallpaper, {window_attribs = {workspace = "new", desktop_path = "/desktop", wallpaper=true, show_in_workspace=true}})
 
