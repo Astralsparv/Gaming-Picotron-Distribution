@@ -498,7 +498,7 @@ local function download(fs,root)
 				cd(root) --return to root afterwards
 			else
 				notify("Downloading: "..root.."/"..v)
-				store(root.."/"..v,fetch(distroOnlineSource..v))
+				store(root.."/"..v,fetch(distroOnlineSource..v),{metadata_format="none"})
 			end
 		end
 	else
