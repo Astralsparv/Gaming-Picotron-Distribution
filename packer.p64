@@ -1,0 +1,69 @@
+picotron cartridge // www.picotron.net
+version 2
+
+:: gfx/
+:: map/
+:: sfx/
+:: main.lua
+--[[pod_format="raw",created="2025-12-20 06:27:19",modified="2025-12-20 06:33:27",revision=17]]
+--!run this, do not load and run!
+
+cd("..")
+notify(pwd())
+
+notify("Deleting previous version")
+rm("compressed.p64")
+
+notify("Creating distro in RAM")
+mkdir("/ram/distro.p64")
+
+notify("Cloning distro")
+cp(pwd(),"/ram/distro.p64")
+
+notify("Removing compressed.p64 (safety remove)")
+rm("/ram/distro.p64/compressed.p64")
+
+notify("Removing packer.p64")
+rm("/ram/distro.p64/packer.p64")
+
+notify("Removing readme.md")
+rm("/ram/distro.p64/readme.md")
+
+notify("Removing LICENSE")
+rm("/ram/distro.p64/LICENSE")
+
+notify("Clearing metadata of /lib/head.lua")
+store_metadata("/lib/head.lua",{metadata_format="none"})
+
+notify("Copying to distro")
+cp("/ram/distro.p64","compressed.p64")
+
+notify("Clearing RAM")
+rm("/ram/distro.p64")
+
+notify("DONE!")
+:: .info.pod
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:33:28",runtime=24,workspaces={{location="main.lua#36",workspace_index=1}}]]
+:: gfx/.info.pod
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:33:28"]]
+:: gfx/0.gfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
+MS0xNyAxMDozNzo0NCIscmV2aXNpb249Ml1dbHo0AH4AAAASMQAA8yF7WzBdPXtibXA9cHh1AEMg
+EBAE8FYHEAfAF9AXwAcQB-BWLGZsYWdzPTAscGFuX3gIAMt5PTAsem9vbT04fSw_AB-wMQD-----
+-----------------------------------------------------------XUG09OH19
+:: map/.info.pod
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:33:28"]]
+:: map/0.map
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
+MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
+aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
+CgBgdz0xNn19
+:: sfx/.info.pod
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:33:28"]]
+:: sfx/0.sfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
+Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
+AAGgASACoA4ADxAADfDKAQIDQA8PkAQFBgdADJAICQoLQAyQDwwPDQ8ODEAM8P8BAOv-J6oBEAYP
+MBABIAEgAfAAAhACDhABIA8hIAEwD0Dwww8oD--wxg-4Cg--D4AP9w8NAfAJARAGDjAA------_9
+H-8BAKzPyA9AAA8QQP--sPD-AQD-6lD-----KQ==
+:: [eoc]

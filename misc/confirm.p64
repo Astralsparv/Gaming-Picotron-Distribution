@@ -5,7 +5,7 @@ version 2
 :: map/
 :: sfx/
 :: main.lua
---[[pod_format="raw",created="2025-09-09 21:06:30",modified="2025-09-09 22:35:57",revision=61]]
+--[[pod_format="raw",created="2025-09-09 21:06:30",modified="2025-12-20 06:21:02",revision=62]]
 --[[
 	
 	Load Cartridge / New Cartridge / Shutdown / Reboot
@@ -121,22 +121,22 @@ end
 :: gfx/.info.pod
 --[[pod,created="2025-09-09 21:06:06",modified="2025-12-15 18:22:45"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-MS0xNyAxMDozNzo0NCIscmV2aXNpb249Ml1dbHo0AH4AAAASMQAA8yF7WzBdPXtibXA9cHh1AEMg
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249M11dbHo0AH4AAAASMQAA8yF7WzBdPXtibXA9cHh1AEMg
 EBAE8FYHEAfAF9AXwAcQB-BWLGZsYWdzPTAscGFuX3gIAMt5PTAsem9vbT04fSw_AB-wMQD-----
 -----------------------------------------------------------XUG09OH19
 :: map/.info.pod
 --[[pod,created="2025-09-09 21:06:06",modified="2025-12-15 18:22:45"]]
 :: map/0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-OS0wOSAyMTowNjowNiIscmV2aXNpb249Ml1dbHo0AEwAAABQAAAA8Rx7e2JtcD1weHUATIAgIAD-
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249M11dbHo0AEwAAABQAAAA8Rx7e2JtcD1weHUATIAgIAD-
 AAD---8DLGhpZGRlbj1mYWxzZSxwYW5feD0wCADSeT0wLHRpbGVfaD0xNgoAEHcKAIB6b29tPTF9
 fQ==
 :: sfx/.info.pod
 --[[pod,created="2025-09-09 21:06:06",modified="2025-12-15 18:22:45"]]
 :: sfx/0.sfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
-Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249MV1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
 AAGgASACoA4ADxAADfDKAQIDQA8PkAQFBgdADJAICQoLQAyQDwwPDQ8ODEAM8P8BAOv-J6oBEAYP
 MBABIAEgAfAAAhACDhABIA8hIAEwD0Dwww8oD--wxg-4Cg--D4AP9w8NAfAJARAGDjAA------_9
 H-8BAKzPyA9AAA8QQP--sPD-AQD-6lD-----KQ==

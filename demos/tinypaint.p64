@@ -5,7 +5,7 @@ version 2
 :: map/
 :: sfx/
 :: main.lua
---[[pod_format="raw",created="2025-04-08 04:48:36",modified="2025-04-08 05:44:32",revision=259]]
+--[[pod_format="raw",created="2025-04-08 04:48:36",modified="2025-12-20 06:21:01",revision=260]]
 -- tiny painting program to demo create_undo_stack()
 
 col = 8 + rnd(11) -- random brush colour
@@ -71,22 +71,22 @@ end
 :: gfx/.info.pod
 --[[pod,created="2025-04-08 05:00:37",modified="2025-12-15 18:22:44"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0w
-NC0wOCAwNTo0NDozMiIscmV2aXNpb249MjA0XV1sejQAfgAAABIxAADzIXtbMF09e2JtcD1weHUA
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249MjA1XV1sejQAfgAAABIxAADzIXtbMF09e2JtcD1weHUA
 QyAQEATwVgcQB8AX0BfABxAH8FYsZmxhZ3M9MCxwYW5feAgAy3k9MCx6b29tPTh9LD4AH-AxAP--
 -------------------------------------------------------------9dQbT04fX0=
 :: map/.info.pod
 --[[pod,created="2025-04-08 05:00:37",modified="2025-12-15 18:22:44"]]
 :: map/0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0w
-NC0wOCAwNTo0NDozMiIscmV2aXNpb249MjAyXV1sejQAaAAAAFgQAADwCHt7Ym1wPXVzZXJkYXRh
-KCJpMTYiLDMyAwAvIjABAP--------------------vxCCIpLGhpZGRlbj1mYWxzZSxwYW5feD0w
-CADSeT0wLHRpbGVfaD0xNgoAEHcKAIB6b29tPTF9fQ==
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249MjAzXV1sejQATAAAAFAAAADxHHt7Ym1wPXB4dQBMgCAg
+AP8AAP---wMsaGlkZGVuPWZhbHNlLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2CgAQdwoAgHpvb209
+MX19
 :: sfx/.info.pod
 --[[pod,created="2025-04-08 05:00:37",modified="2025-12-15 18:22:44"]]
 :: sfx/0.sfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0w
-NC0wOCAwNTo0NDozMiIscmV2aXNpb249MjAyXV1sejQAoAAAAAsKAAD-MHB4dQADKAAABAAED0AQ
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTA4IDA0OjQ4OjM2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249MjAzXV1sejQAoAAAAAsKAAD-MHB4dQADKAAABAAED0AQ
 Ag4AAaABIAKgDgAPEAAN8MoBAgNADw_QBAUGB0AMkAgJCgtADJAPDA8NDw4MQAzw-wEA6-8nqgEQ
 Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p

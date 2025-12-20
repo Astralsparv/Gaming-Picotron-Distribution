@@ -7,7 +7,7 @@ version 2
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-20 01:08:24",revision=105]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-20 06:21:04",revision=106]]
 
 function gameSettings(path)
 	local meta=fetch_metadata(path) or {}
@@ -126,7 +126,7 @@ function wrapText(text,width)
 	return res,nl,fwidth
 end
 :: gui.lua
---[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-18 11:51:33",revision=41]]
+--[[pod_format="raw",created="2025-12-16 12:39:09",modified="2025-12-20 06:21:04",revision=42]]
 function text(gui,data)
 	local width,height=proportions(data.label)
 	width+=1
@@ -220,7 +220,7 @@ function button(gui,data,extra)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-20 01:39:55",revision=704]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-20 06:21:04",revision=705]]
 mkdir("/games/")
 games=ls("/games/")
 
@@ -484,7 +484,7 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 06:20:14",revision=589]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 06:21:04",revision=590]]
 local gui=create_gui{}
 local distroOnlineSource="https://raw.githubusercontent.com/Astralsparv/Gaming-Picotron-Distribution/refs/heads/main/"
 
@@ -823,7 +823,7 @@ function draw_home()
 end
 
 :: guis/splore.lua
---[[pod_format="raw",created="2025-12-20 00:04:57",modified="2025-12-20 01:02:59",revision=116]]
+--[[pod_format="raw",created="2025-12-20 00:04:57",modified="2025-12-20 06:21:04",revision=117]]
 local gamepoint=1
 mkdir("/ram/bbs_cache")
 
@@ -1135,7 +1135,7 @@ function draw_splore()
 end
 
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-20 01:30:49",revision=76]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-20 06:21:04",revision=77]]
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
 
@@ -1199,7 +1199,7 @@ NzA3MDcwNzA3MDEwMDAwMDEwNzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzA3
 MGQwZDA3MDcwNzA3MDcwNzAxMDAwMDAxMDcwNzA3MDcwZDBkMDcwNzA3MDcwNzA3MDEwMDAwMDEw
 NzA3MDcwNzBkMGQwNzA3MDcwNzA3MDcwMTAwMDAwMTA3MDcwNzBkMGQwZDBkMDcwNzA3MDcwNzAx
 MDAwMDAxMDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MDEwMDAwMDEwMTAxMDEwMTAxMDEwMTAxMDEw
-MTAxMDEwMTAwIiksbW9kaWZpZWQ9IjIwMjUtMTItMTcgMTk6NTY6NDciLHJldmlzaW9uPTI2XV1s
+MTAxMDEwMTAwIiksbW9kaWZpZWQ9IjIwMjUtMTItMjAgMDY6MjE6MDQiLHJldmlzaW9uPTI3XV1s
 ejQAvQYAABgHAADwrnB4dQADKAAIAAAEBAkLEANgASAPEEAHcAFADyABEAEOcA9gAA4wDiAPEfAw
 bw8gLUANCQ1ACQYJQAkACUApMAwPDg0KDCADBw0HAxAHEYAYCgAPEQ8bCg8fBAUEMAaABgxQFgAf
 BVAGCQbATwIAAgAfBXAPCgULBQsQBAoBBggHBBAJBAIJIAIPBQIPCw8FCwAUUARSBAJUAhAOAgcC
@@ -1243,8 +1243,8 @@ NzA3MDcxOTAwMDAxOTA3MDcxNDE0MDcwNzA0MDQwNzA3MDcwNzE5MDAwMDE5MDcwNzE0MTQwNzA0
 MDQwNDA0MDcwNzA3MTkwMDAwMTkwNzA3MTQxNDA3MDcwNDA0MDcwNzA3MDcxOTAwMDAxOTA3MDcx
 NDE0MDcwNzA3MDQwNDA3MDcwNzE5MDAwMDE5MDcwNzA3MDcwNzA3MDcwNzA3MDcwNzA3MTkwMDAw
 MTkxOTE5MTkxOTE5MTkxOTE5MTkxOTE5MTkxOTAwIiksbG93Y29sX2ljb249ZmFsc2UsbW9kaWZp
-ZWQ9IjIwMjUtMDUtMTQgMTQ6MzA6MTUiLG5vdGVzPSJTaG9ydCBhbmQgc3R1YmJ5IGZvbnQgZm9y
-IHJldHJvXG5zdHlsZSBnYW1lcyIscmV2aXNpb249Mix0aXRsZT0iV2lkZSBTcXVhdCIsdmVyc2lv
+ZWQ9IjIwMjUtMTItMjAgMDY6MjE6MDQiLG5vdGVzPSJTaG9ydCBhbmQgc3R1YmJ5IGZvbnQgZm9y
+IHJldHJvXG5zdHlsZSBnYW1lcyIscmV2aXNpb249Myx0aXRsZT0iV2lkZSBTcXVhdCIsdmVyc2lv
 bj0iIl1dbHo0APoFAAArBgAA8oFweHUAAygACAAABAUIBhADkA9wDycAD3EPdwAOBkAPdg9wAAIQ
 DxAPYAAPIAEgDQAfcAAHIA9gBw8nEA4ADQAHBgEQD2APZg9gABwADPAmRzAnQAcFB0AFAgVABQAF
 QCUwBAYHBgQgAQMHAwEgByFAJAcgBQcCBwJAAnABAlATIBVQAgUCwCYABiAVUA8WDz8EAPAJIAYP
@@ -1277,7 +1277,7 @@ DQggCA0KBAgg
 --[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:20:23"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
-Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
+Mi0yMCAwNjoyMTowNCIscmV2aXNpb249MjVdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
 ICAgBPD-MfcR9g4X9gccRhc2HfYAPDYHAPUA1hgGHAYaFhcGfZY4FjoGCAABGgAQGxoAACsAJDs2
 BwDzCvYHG0YX9g73EfDwLGZsYWdzPTAscGFuX3gIAMt5PTAsem9vbT04fSyHAN8w8TL3DDH3DDEX
 -QgXBQAlAkIAgjf-HQJXMTf_BQAjNx4GAGL3CB4REBEGAEH_CBEwBQB-8QpQ8QrwNq4AHPAFkLfw
@@ -1291,15 +1291,14 @@ BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 :: map/.info.pod
 --[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:20:23"]]
 :: map/0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
-aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
-CgBgdz0xNn19
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowNCIscmV2aXNpb249Ml1dbHo0ADkAAAA8AAAA8Q97e2JtcD1weHUATIAgIAD-
+AAD---8DLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2CgBgdz0xNn19
 :: sfx/.info.pod
 --[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 06:20:23"]]
 :: sfx/0.sfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
-Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowNCIscmV2aXNpb249MV1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
 AAGgASACoA4ADxAADfDKAQIDQA8PkAQFBgdADJAICQoLQAyQDwwPDQ8ODEAM8P8BAOv-J6oBEAYP
 MBABIAEgAfAAAhACDhABIA8hIAEwD0Dwww8oD--wxg-4Cg--D4AP9w8NAfAJARAGDjAA------_9
 H-8BAKzPyA9AAA8QQP--sPD-AQD-6lD-----KQ==

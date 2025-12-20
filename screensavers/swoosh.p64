@@ -2,7 +2,7 @@ picotron cartridge // www.picotron.net
 version 2
 
 :: main.lua
---[[pod_format="raw",created="2023-40-31 14:40:49",revision=1,stored="2023-41-31 14:41:15"]]
+--[[pod_format="raw",created="2023-10-31 14:40:49",modified="2025-12-20 06:21:02",revision=2,stored="2023-41-31 14:41:15"]]
 q=0
 poke(0x550b, 0xff)
 

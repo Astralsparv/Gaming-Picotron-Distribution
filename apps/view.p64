@@ -2,7 +2,7 @@ picotron cartridge // www.picotron.net
 version 2
 
 :: dither.lua
---[[pod_format="raw",created="2025-07-29 18:14:27",modified="2025-08-23 05:37:21",revision=63]]
+--[[pod_format="raw",created="2025-07-29 18:14:27",modified="2025-12-20 06:21:00",revision=64]]
 -- to do: dither
 -- maybe out of scope? slippery slope to simple editing, sprite sheet
 -- management and re-saving operations?
@@ -69,7 +69,7 @@ function dither(img)
 	return out
 end
 :: gui.lua
---[[pod_format="raw",created="2025-07-29 17:51:46",modified="2025-07-29 17:54:43",revision=5]]
+--[[pod_format="raw",created="2025-07-29 17:51:46",modified="2025-12-20 06:21:00",revision=6]]
 function generate_gui()
 	gui = create_gui{
 		x=0,y=0,
@@ -86,7 +86,7 @@ function generate_gui()
 	}
 end
 :: image.lua
---[[pod_format="raw",created="2025-07-29 17:50:33",modified="2025-07-29 17:59:53",revision=15]]
+--[[pod_format="raw",created="2025-07-29 17:50:33",modified="2025-12-20 06:21:00",revision=16]]
 
 function create_image_el(el)
 	el = gui:attach(el)
@@ -128,7 +128,7 @@ function create_image_el(el)
 	
 end
 :: main.lua
---[[pod_format="raw",created="2025-07-29 10:10:38",modified="2025-10-31 03:44:33",revision=156]]
+--[[pod_format="raw",created="2025-07-29 10:10:38",modified="2025-12-20 06:21:00",revision=157]]
 --[[
 
 	general purpose viewer
@@ -249,7 +249,7 @@ end
 
 
 :: p8.lua
---[[pod_format="raw",created="2025-07-26 09:47:51",modified="2025-07-26 09:47:51",revision=0]]
+--[[pod_format="raw",created="2025-07-26 09:47:51",modified="2025-12-20 06:21:00",revision=1]]
 
 function extract_p8_spritesheet(fn)
 	local str = fetch(fn)

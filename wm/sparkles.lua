@@ -1,3 +1,4 @@
+--[[pod_format="raw",created="2025-12-20 06:21:04",modified="2025-12-20 06:21:04",revision=0]]
 --[[
 
 	proof of concept: module that hooks into wm with update, draw callbacks

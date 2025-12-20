@@ -5,7 +5,7 @@ version 2
 :: map/
 :: sfx/
 :: main.lua
---[[pod_format="raw",created="2024-03-10 03:54:08",modified="2024-03-10 03:59:32",revision=14]]
+--[[pod_format="raw",created="2024-03-10 03:54:08",modified="2025-12-20 06:21:02",revision=15]]
 -- placeholder background for tooltray
 -- to do: tooltray theme is used for "desktop*" in that context?
 function _draw()
@@ -17,22 +17,21 @@ end
 :: gfx/.info.pod
 --[[pod,created="2024-03-10 03:54:08",modified="2025-12-15 18:22:45",stored="2024-03-10 03:54:08"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNC0w
-My0xMCAwMzo1OTozMiIscmV2aXNpb249MTBdXWx6NABtAAAABTEAAPMUe1swXT17Ym1wPXB4dQBD
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMiIscmV2aXNpb249MTFdXWx6NABtAAAABTEAAPMUe1swXT17Ym1wPXB4dQBD
 IBAQBPDwLGZsYWdzPTAscGFuX3gIAM95PTAsem9vbT04fSwxAP--------------------------
 -------------------------------------_dQbT04fX0=
 :: map/.info.pod
 --[[pod,created="2024-03-10 03:54:08",modified="2025-12-15 18:22:45",stored="2024-03-10 03:54:08"]]
 :: map/map0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNC0w
-My0xMCAwMzo1OTozMiIscmV2aXNpb249MTBdXWx6NABSAAAATwQAAPAMe1swXT17Ym1wPXVzZXJk
-YXRhKCJpMTYiLDE2AwAvIjABAP---__hIikscGFuX3g9MAgA0nk9MCx0aWxlX2g9MTYKABB3CgCA
-em9vbT0xfX0=
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMiIscmV2aXNpb249MTFdXWx6NABAAAAARAAAAPEQe1swXT17Ym1wPXB4dQBM
+gBAQAP8AAAAscGFuX3g9MAgA0nk9MCx0aWxlX2g9MTYKABB3CgCAem9vbT0xfX0=
 :: sfx/.info.pod
 --[[pod,created="2024-03-10 03:54:08",modified="2025-12-15 18:22:45",stored="2024-03-10 03:54:08"]]
 :: sfx/sfx0.sfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNC0w
-My0xMCAwMzo1OTozMiIscmV2aXNpb249N11dbHo0ABABAABRBwAA8CdweHUAAygAAAMABA9AEAIO
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTEwIDAzOjU0OjA4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMiIscmV2aXNpb249OF1dbHo0ABABAABRBwAA8CdweHUAAygAAAMABA9AEAIO
 AAGgASACoA4ADxAADfDKAQIDBAUGBwEP-5AICQoLDwwPDQ8ODw8QAPAADQ8RDxIPEw8UDxUPFg8X
 EwDxAQ8YDxkPGg8bDxwPHQ8eDx8UAPEAIA8hDyIPIw8kDyUPJg8nFADxACgPKQ8qDysPLA8tDy4P
 LxQA8QAwDzEPMg8zDzQPNQ82DzcUAP8FOA85DzoPOw88Dz0PPg8-AQ--8P8BAOv-J1oBEAYPIBAB

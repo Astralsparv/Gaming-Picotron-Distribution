@@ -4,7 +4,7 @@ version 2
 :: _meta/
 :: snippets/
 :: main.lua
---[[pod_format="raw",created="2023-10-12 06:30:01",modified="2025-10-20 19:09:06",revision=736]]
+--[[pod_format="raw",created="2023-10-12 06:30:01",modified="2025-12-20 06:21:01",revision=737]]
 --[[
 	proggy: demonstrate live code loading and editor gui
 
@@ -93,7 +93,7 @@ function create_snippet_buttons()
 end
 
 :: snippets/donut.lua
---[[pod_format="raw",created="2023-52-20 10:52:24",modified="2024-35-01 11:35:14",revision=48]]
+--[[pod_format="raw",created="2023-10-20 10:52:24",modified="2025-12-20 06:21:01",revision=49]]
 cls()
 
 for y=-20,260,12 do
@@ -108,7 +108,7 @@ for y=-20,260,12 do
 	end
 end
 :: snippets/dots3d.lua
---[[pod_format="raw",created="2023-35-12 06:35:21",modified="2023-12-01 00:12:54",revision=229]]
+--[[pod_format="raw",created="2023-10-12 06:35:21",modified="2025-12-20 06:21:01",revision=230]]
 -- 3d dot party
 -- by zep
 cls()
@@ -184,7 +184,7 @@ end
 	end
 
 :: snippets/jumble.lua
---[[pod_format="raw",created="2023-32-31 22:32:01",modified="2023-55-31 23:55:45",revision=11]]
+--[[pod_format="raw",created="2023-10-31 22:32:01",modified="2025-12-20 06:21:01",revision=12]]
 -- jumble pixels
 
 for i=0,2500 do
@@ -204,7 +204,7 @@ for i=0,2500 do
 end
 
 :: snippets/magnet.lua
---[[pod_format="raw",created="2023-21-31 22:21:30",modified="2023-56-31 23:56:01",revision=48]]
+--[[pod_format="raw",created="2023-10-31 22:21:30",modified="2025-12-20 06:21:01",revision=49]]
 cls()
 
 for y=0,240,10 do
@@ -220,19 +220,19 @@ end
 end
 
 :: snippets/paint.lua
---[[pod_format="raw",created="2023-34-12 06:34:53",modified="2024-35-01 11:35:14",revision=82]]
+--[[pod_format="raw",created="2023-10-12 06:34:53",modified="2025-12-20 06:21:01",revision=83]]
 --	paint on the output image
 
 if mb > 0 then
 	circfill(mx, my, 10, 8 + (t()*10)%8)
 end
 :: snippets/pulse.lua
---[[pod_format="raw",created="2023-31-20 10:31:51",modified="2024-35-01 11:35:14",revision=57]]
+--[[pod_format="raw",created="2023-10-20 10:31:51",modified="2025-12-20 06:21:01",revision=58]]
 cls()
 circ(120,120,40+cos(t())*10,7)
 
 :: snippets/sand.lua
---[[pod_format="raw",created="2023-32-20 10:32:04",modified="2023-12-01 00:12:58",revision=20]]
+--[[pod_format="raw",created="2023-10-20 10:32:04",modified="2025-12-20 06:21:01",revision=21]]
 q = q and (q+2)%9 or 0
 
 for y=239-q%3,0,-3 do
@@ -245,7 +245,7 @@ end
 end
 
 :: snippets/vpaint.lua
---[[pod_format="raw",created="2023-34-12 06:34:53",modified="2024-35-01 11:35:14",revision=82]]
+--[[pod_format="raw",created="2023-10-12 06:34:53",modified="2025-12-20 06:21:01",revision=83]]
 -- vaporize the output bitmap
 for i=1,2000 do
 	local x,y = rnd(240),rnd(240)
@@ -266,7 +266,7 @@ if mb > 0 then
 end
 last_mx, last_my, last_mb = mx,my,mb
 :: snippets/wheel.lua
---[[pod_format="raw",created="2023-19-01 00:19:38",modified="2024-35-01 11:35:14",revision=41]]
+--[[pod_format="raw",created="2023-10-01 00:19:38",modified="2025-12-20 06:21:01",revision=42]]
 cls()
 for i=31,1,-1 do
 	circfill(
@@ -281,11 +281,11 @@ end
 :: _meta/.info.pod
 --[[pod,created="2024-10-01 11:34:37",modified="2025-12-15 18:22:44",stored="2024-34-01 11:34:37"]]
 :: _meta/workspaces.pod
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTI5LTEyIDA2OjI5OjExIixtb2RpZmllZD0iMjAyMy0w
-My0wMiAyMzowMzo0NCIsbW9kaWZpZWRfdHM9IjIwMDAtMDEtMDEgMDA6MDA6MDAiLHJldmlzaW9u
-PTE4NDZdXWx6NAB5AAAAMAEAAPkce3tjcHJval9maWxlPSJtYWluLmx1YSIsd29ya3NwYWNlX2lu
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTEyIDA2OjI5OjExIixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIsbW9kaWZpZWRfdHM9IjIwMDAtMDEtMDEgMDA6MDA6MDAiLHJldmlzaW9u
+PTE4NDddXWx6NAB6AAAAMAEAAPkce3tjcHJval9maWxlPSJtYWluLmx1YSIsd29ya3NwYWNlX2lu
 ZGV4PTF9LCoA73NuaXBwZXRzL3BhaW50NAADHzI0AAUfdjUACB8zNQAFT2RvbnU0AAQfNDQABV93
-aGVlbDQAAx810QAGT3Vsc2U0AAFQeD02fX0=
+aGVlbDQAAx81NAAFX3B1bHNlNAABUHg9Nn19
 :: snippets/.info.pod
 --[[pod,created="2024-10-01 11:34:37",modified="2025-12-15 18:22:44",stored="2024-34-01 11:34:37"]]
 :: [eoc]

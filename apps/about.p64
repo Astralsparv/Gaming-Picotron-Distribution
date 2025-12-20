@@ -5,7 +5,7 @@ version 2
 :: map/
 :: sfx/
 :: gui.lua
---[[pod_format="raw",created="2023-10-22 10:17:57",modified="2025-05-21 19:52:02",revision=3062]]
+--[[pod_format="raw",created="2023-10-22 10:17:57",modified="2025-12-20 06:21:00",revision=3063]]
 
 
 
@@ -357,7 +357,7 @@ function generate_gui()
 end
 
 :: icon.lua
---[[pod_format="raw",created="2023-10-25 08:45:20",modified="2025-05-21 19:52:02",revision=2523]]
+--[[pod_format="raw",created="2023-10-25 08:45:20",modified="2025-12-20 06:21:00",revision=2524]]
 --[[
 
 	specialised icon editor
@@ -593,7 +593,7 @@ function icon_init()
 	generate_icon_palettes()
 end
 :: main.lua
---[[pod_format="raw",created="2023-10-16 06:32:18",modified="2025-05-21 19:52:02",revision=3026]]
+--[[pod_format="raw",created="2023-10-16 06:32:18",modified="2025-12-20 06:21:00",revision=3027]]
 --[[
 
 	a7: easy access to 1,13,6,7 palette?
@@ -807,8 +807,8 @@ end
 :: gfx/.info.pod
 --[[pod,created="2023-10-16 06:31:52",modified="2025-12-15 18:22:44",stored="2023-31-16 06:31:52"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTE2IDA2OjMyOjE4Iixtb2RpZmllZD0iMjAyNS0w
-NS0yMSAxOTo1MjowMiIscmV2aXNpb249Mjk5OV1dbHo0AJAQAABzUAAA8xd7WzBdPXtibXA9cHh1
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTE2IDA2OjMyOjE4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249MzAwMF1dbHo0AJAQAABzUAAA8xd7WzBdPXtibXA9cHh1
 AEMgBQEEAAENBgcsZmxhZ3M9MCxwYW5feAgAy3k9MCx6b29tPTh9LDQAbw8SDw4PFzcAGl8QEATw
 8DEACy0xNDIA3gD-EgHXHge-DgceB70EAP8I1x4XjxcnHheMFwwetwwOAA68DhDO8ANnAB__8QHX
 EQe-EgcRB74EAP8G1xEXjw4nEReNFw0Rtw0BAAG9ARDBZgAf8BEgkUABlwEgAQedBwEAAQc9Nz0H
@@ -887,10 +887,9 @@ LVBtPTh9fQ==
 :: map/.info.pod
 --[[pod,created="2023-10-16 06:31:52",modified="2025-12-15 18:22:44",stored="2023-31-16 06:31:52"]]
 :: map/0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTE2IDA2OjMyOjE4Iixtb2RpZmllZD0iMjAyNS0w
-NS0yMSAxOTo1MjowMiIscmV2aXNpb249MjY2MV1dbHo0AFsAAABWBAAA8Ah7e2JtcD11c2VyZGF0
-YSgiaTE2IiwxNgMALyIwAQD----v8QgiKSxoaWRkZW49ZmFsc2UscGFuX3g9MAgAwnk9MCx0aWxl
-X2g9MQkAwHc9NSx6b29tPTR9fQ==
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTE2IDA2OjMyOjE4Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249MjY2Ml1dbHo0AEgAAABLAAAA8Rl7e2JtcD1weHUATIAQ
+EAD-AAAALGhpZGRlbj1mYWxzZSxwYW5feD0wCADCeT0wLHRpbGVfaD0xCQDAdz01LHpvb209NH19
 :: sfx/.info.pod
 --[[pod,created="2023-10-16 06:31:52",modified="2025-12-15 18:22:44",stored="2023-31-16 06:31:52"]]
 :: [eoc]

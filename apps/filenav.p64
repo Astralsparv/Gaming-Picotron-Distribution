@@ -9,7 +9,7 @@ version 2
 :: map/
 :: sfx/
 :: desktop.lua
---[[pod_format="raw",created="2023-10-04 15:13:41",modified="2025-04-19 19:20:42",revision=3241,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-04 15:13:41",modified="2025-12-20 06:21:00",revision=3242,stored="2023-21-29 09:21:19"]]
 -- mode: desktop
 local desktop_items = nil
 local desktop_content = nil
@@ -706,7 +706,7 @@ end
 
 
 :: drop.lua
---[[pod_format="raw",created="2023-10-11 09:19:20",modified="2025-04-19 19:20:42",revision=1048,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-11 09:19:20",modified="2025-12-20 06:21:00",revision=1049,stored="2023-21-29 09:21:19"]]
 
 function check_for_overwrites(msg)
 
@@ -866,7 +866,7 @@ end)
 
 
 :: finfo.lua
---[[pod_format="raw",created="2023-10-08 09:24:50",modified="2025-04-19 19:20:42",revision=3060,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-08 09:24:50",modified="2025-12-20 06:21:00",revision=3061,stored="2023-21-29 09:21:19"]]
 --[[
 	finfo.lua
 	
@@ -1486,7 +1486,7 @@ end
 
 
 :: grid.lua
---[[pod_format="raw",created="2023-10-20 06:27:59",modified="2025-04-19 19:20:42",revision=3156,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-20 06:27:59",modified="2025-12-20 06:21:00",revision=3157,stored="2023-21-29 09:21:19"]]
 -- mode: icons on a grid (default folder view; is cutest for < ~100 files)
 local sel = nil
 local function create_file_item(parent, ff, x, y)
@@ -1881,7 +1881,7 @@ end
 
 
 :: icon.lua
---[[pod_format="raw",created="2023-40-05 07:40:42",modified="2023-01-11 10:01:03",revision=612,stored="2023-59-07 07:59:44"]]
+--[[pod_format="raw",created="2023-10-05 07:40:42",modified="2025-12-20 06:21:00",revision=613,stored="2023-59-07 07:59:44"]]
 --[[
 	icon.lua
 	
@@ -2004,7 +2004,7 @@ end
 
 
 :: intention.lua
---[[pod_format="raw",created="2023-10-05 21:49:51",modified="2025-04-19 19:20:42",revision=1533]]
+--[[pod_format="raw",created="2023-10-05 21:49:51",modified="2025-12-20 06:21:00",revision=1534]]
 --[[
 
 	intention.lua
@@ -2296,7 +2296,7 @@ end
 
 
 :: interf.lua
---[[pod_format="raw",created="2023-11-20 08:11:39",modified="2025-04-19 19:20:42",revision=3837,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-11-20 08:11:39",modified="2025-12-20 06:21:00",revision=3838,stored="2023-21-29 09:21:19"]]
 -- interface
 
 
@@ -2498,7 +2498,7 @@ end
 
 
 :: list.lua
---[[pod_format="raw",created="2023-10-20 06:27:42",modified="2025-04-19 19:20:42",revision=3515,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-20 06:27:42",modified="2025-12-20 06:21:00",revision=3516,stored="2023-21-29 09:21:19"]]
 -- mode: list
 local item_h = 12
 local function create_file_item(parent, ff, x, y)
@@ -2749,7 +2749,7 @@ end
 
 
 :: main.lua
---[[pod_format="raw",created="2023-10-20 06:24:13",modified="2025-04-19 19:20:42",revision=3778,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-20 06:24:13",modified="2025-12-20 06:21:00",revision=3779,stored="2023-21-29 09:21:19"]]
 --[[
 	fi: shuffleable stacks dev
 ]]
@@ -2967,7 +2967,7 @@ end)
 
 
 :: open.lua
---[[pod_format="raw",created="2023-10-04 12:46:16",modified="2025-04-19 19:20:42",revision=3377,stored="2023-21-29 09:21:19"]]
+--[[pod_format="raw",created="2023-10-04 12:46:16",modified="2025-12-20 06:21:00",revision=3378,stored="2023-21-29 09:21:19"]]
 
 	
 	function click_on_file(filename, action, argv)
@@ -3051,7 +3051,7 @@ end)
 
 
 :: tabcomp.lua
---[[pod_format="raw",created="2023-53-26 19:53:00",modified="2024-04-03 05:32:39",revision=59,stored="2023-59-07 07:59:44"]]
+--[[pod_format="raw",created="2023-10-26 19:53:00",modified="2025-12-20 06:21:00",revision=60,stored="2023-59-07 07:59:44"]]
 --[[
 	fa: create gui with relative sizes
 ]]
@@ -3123,8 +3123,8 @@ end
 :: gfx/.info.pod
 --[[pod,created="2023-11-15 07:11:30",modified="2025-12-15 18:22:44",stored="2023-11-15 07:11:30"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTIwIDA2OjM4OjU2Iixtb2RpZmllZD0iMjAyNS0w
-Ny0yOCAxNTo1MTozNCIscmV2aXNpb249MzE1MCxzdG9yZWQ9IjIwMjMtMzQtMDkgMTk6MzQ6NTMi
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTIwIDA2OjM4OjU2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249MzE1MSxzdG9yZWQ9IjIwMjMtMzQtMDkgMTk6MzQ6NTMi
 XV1sejQAggQAAOo6AADzFHtbMF09e2JtcD1weHUAQyAQEATw8CxmbGFncz0wLHBhbl94CADKeT0w
 LHpvb209OH0sMQDzCgCRUAF3BgFAAXcWATABdyYBIAF3NgEQAbcEADQXJmcKAC1GRwoAAwQAL9EA
 dgAc7-AJUYABLSYBAGEtNhHWAgABTwEA0QDLADggJz2zADU3LUcMAEEXLQcNCAAgHXcGACBdNxoA
@@ -3147,8 +3147,8 @@ BCQHJggAH3eIAEQCDwwqB2YKAgCGAQkSAAMgAB_HhgBEGrd4Ag-nBQsPfgN_AJAFD-YMFALXCx8C
 9Axar3cRQAFmEVCB8AUJAU5gArEgAbcBBA4P1QwCBPQNHwKJAB4PMQD---------------------
 ----------------------------gVBtPTh9fQ==
 :: gfx/1.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTExIDAzOjEzOjAxIixtb2RpZmllZD0iMjAyNS0w
-NC0xOSAxOToyMDo0MiIscmV2aXNpb249MTMyMV1dbHo0AJoAAAAzMQAA8xR7WzBdPXtibXA9cHh1
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTExIDAzOjEzOjAxIixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249MTMyMl1dbHo0AJoAAAAzMQAA8xR7WzBdPXtibXA9cHh1
 AEMgEBAE8PAsZmxhZ3M9MCxwYW5feAgAz3k9MCx6b29tPTh9LDEAKfUBCAgENzAHEBcgBxAnEAcw
 BwQAL1eQRwAuj1eQBwAHAAcgSQAODvIADzEA----------------------------------------
 ------------------------QlBtPTh9fQ==
@@ -3163,15 +3163,15 @@ BwQAL1eQRwAuj1eQBwAHAAcgSQAODvIADzEA----------------------------------------
 :: map/.info.pod
 --[[pod,created="2024-03-07 10:11:56",modified="2025-12-15 18:22:44",stored="2024-03-07 10:11:56"]]
 :: map/map0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTA3IDEwOjExOjU2Iixtb2RpZmllZD0iMjAyNC0w
-My0wNyAxMDoxMjowMSIscmV2aXNpb249MV1dbHo0AGkAAACjCAAA8BN7bGF5ZXI9e1swXT17Ym1w
-PXVzZXJkYXRhKCJpMTYiLDE2AwAvIjABAP---__hIikscGFuX3g9MAgA8gZ5PTAsc2NhbGU9MSx0
-aWxlX2g9MTYKAG93PTE2fSxLBP----84UDE2fX19
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTA3IDEwOjExOjU2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249Ml1dbHo0AFMAAACNAAAA8Rd7bGF5ZXI9e1swXT17Ym1w
+PXB4dQBMgBAQAP8AAAAscGFuX3g9MAgA8gZ5PTAsc2NhbGU9MSx0aWxlX2g9MTYKAG93PTE2fSxA
+AClQMTZ9fX0=
 :: sfx/.info.pod
 --[[pod,created="2024-03-07 10:11:56",modified="2025-12-15 18:22:44",stored="2024-03-07 10:11:56"]]
 :: sfx/sfx0.sfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTA3IDEwOjExOjU2Iixtb2RpZmllZD0iMjAyNC0w
-My0wNyAxMDoxMjowMSIscmV2aXNpb249MV1dbHo0ABABAABRBwAA8CdweHUAAygAAAMABA9AEAIO
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTAzLTA3IDEwOjExOjU2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMCIscmV2aXNpb249Ml1dbHo0ABABAABRBwAA8CdweHUAAygAAAMABA9AEAIO
 AAGgASACoA4ADxAADfDKAQIDBAUGBwEP-5AICQoLDwwPDQ8ODw8QAPAADQ8RDxIPEw8UDxUPFg8X
 EwDxAQ8YDxkPGg8bDxwPHQ8eDx8UAPEAIA8hDyIPIw8kDyUPJg8nFADxACgPKQ8qDysPLA8tDy4P
 LxQA8QAwDzEPMg8zDzQPNQ82DzcUAP8FOA85DzoPOw88Dz0PPg8-AQ--8P8BAOv-J1oBEAYPIBAB

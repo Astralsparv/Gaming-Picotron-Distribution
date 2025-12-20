@@ -4,7 +4,7 @@ version 2
 :: gfx/
 :: map/
 :: bird.lua
---[[pod_format="raw",created="2024-09-07 19:08:02",modified="2024-09-09 09:14:36",revision=995]]
+--[[pod_format="raw",created="2024-09-07 19:08:02",modified="2025-12-20 06:21:01",revision=996]]
 
 bird={}
 
@@ -147,7 +147,7 @@ function move_bird(a)
 end
 
 :: main.lua
---[[pod_format="raw",created="2023-10-23 09:30:36",modified="2024-09-09 09:14:36",revision=979,stored="2023-12-04 16:12:51"]]
+--[[pod_format="raw",created="2023-10-23 09:30:36",modified="2025-12-20 06:21:01",revision=980,stored="2023-12-04 16:12:51"]]
 --[[
 	birds.p64 by zep
 
@@ -231,8 +231,8 @@ end)
 :: gfx/.info.pod
 --[[pod,created="2023-10-21 16:16:54",modified="2025-12-15 18:22:44",stored="2023-16-21 16:16:54"]]
 :: gfx/0.gfx
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTIzIDA5OjMwOjM2Iixtb2RpZmllZD0iMjAyNC0w
-OS0wOSAwOToxNDozNiIscmV2aXNpb249OTE1LHN0b3JlZD0iMjAyMy0xMi0wNCAxNjoxMjo1MSJd
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTIzIDA5OjMwOjM2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249OTE2LHN0b3JlZD0iMjAyMy0xMi0wNCAxNjoxMjo1MSJd
 XWx6NABtAQAA5DEAAPMie1swXT17Ym1wPXB4dQBDIBAQBPBjFwAfGAAXcBcAHgAX8GUsZmxhZ3M9
 MCxwYW5feAgAx3k9MCx6b29tPTh9LD8A-w0ICAQQCHAvD0AOAQ5ALgoQCQAZQAopIBopQAIwSAAc
 -wqgCC8PEAkQDgEOEAQJAC4KABQpMAQpQBlQSgAeJRAIkQD-ASAZAjA5BDAaCRQgAgoQBIBKABkA
@@ -243,8 +243,8 @@ DgkeYwBAcA4ECWYA-wVgDhQpHoAOBCkOoA4ZDrAOAg7wN30BHg8xAP----------------------
 :: map/.info.pod
 --[[pod,created="2023-10-21 16:16:54",modified="2025-12-15 18:22:44",stored="2023-16-21 16:16:54"]]
 :: map/0.map
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTMwLTIzIDA5OjMwOjM2Iixtb2RpZmllZD0iMjAyMy0x
-NC0zMCAxMDoxNDowNCIscmV2aXNpb249OTQsc3RvcmVkPSIyMDIzLTEyLTA0IDE2OjEyOjUxIl1d
-bHo0AF0AAABYBAAA8BN7bGF5ZXI9e1swXT17Ym1wPXVzZXJkYXRhKCJpMTYiLDE2AwAvIjABAP--
--__hIikscGFuX3g9MAgA8gZ5PTAsc2NhbGU9MSx0aWxlX2g9MTYKAHB3PTE2fX19
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDIzLTEwLTIzIDA5OjMwOjM2Iixtb2RpZmllZD0iMjAyNS0x
+Mi0yMCAwNjoyMTowMSIscmV2aXNpb249OTUsc3RvcmVkPSIyMDIzLTEyLTA0IDE2OjEyOjUxIl1d
+bHo0AEsAAABNAAAA8Rd7bGF5ZXI9e1swXT17Ym1wPXB4dQBMgBAQAP8AAAAscGFuX3g9MAgA8gZ5
+PTAsc2NhbGU9MSx0aWxlX2g9MTYKAHB3PTE2fX19
 :: [eoc]

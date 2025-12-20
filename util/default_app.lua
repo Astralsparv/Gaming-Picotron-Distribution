@@ -1,4 +1,4 @@
---[[pod_format="raw",created="2025-07-15 02:15:51",modified="2025-07-15 02:15:51",prog="bbs://strawberry_src.p64",revision=0,xstickers={}]]
+--[[pod_format="raw",created="2025-07-15 02:15:51",modified="2025-12-20 06:21:03",prog="bbs://strawberry_src.p64",revision=1,xstickers={}]]
 
 local dat = fetch("/appdata/system/default_apps.pod")
 if (type(dat) != "table") dat = {}
