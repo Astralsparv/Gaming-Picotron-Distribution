@@ -27,6 +27,7 @@ BBS:
 * loads from the Picotron BBS
 * loads first 48 games
 * temporarily cached, cannot be downloaded as of now
+* weird bug where fs.lua crashes for async fetch when opening the bbs - doesn't always happen?
 
 Within games:
 

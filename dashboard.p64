@@ -811,6 +811,7 @@ end
 
 :: guis/splore.lua
 --[[pod_format="raw",created="2025-12-20 00:04:57",modified="2025-12-20 01:02:59",revision=116]]
+local gamepoint=1
 mkdir("/ram/bbs_cache")
 
 local objects={
@@ -851,6 +852,7 @@ local function loadBBS(page,amount,sub)
 						meta.title=meta.title or p.title
 						meta.author=meta.title or p.author
 						store_metadata(storepath,meta)
+						loadGames(gamepoint)
 					end
 				end
 			end})
@@ -1005,7 +1007,6 @@ for x=1, columns do
 		}
 	end
 end
-local gamepoint=1
 function loadGames(startat)
 	local row=2
 	games=ls("/ram/bbs_cache/")
