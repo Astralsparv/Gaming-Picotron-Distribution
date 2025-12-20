@@ -628,6 +628,8 @@ local objects={
 								self.label="Update Distribution to "..vers.."\n(will cause a reboot)"
 								notify("You are on "..distro_version.."! Update to latest: "..vers)
 								self.action=function(self)
+									notify("You cannot download at this time. (solving issues with rate limiting)")
+									--[[
 									--download the update and reboot
 									local fs=fetch(distroOnlineSource.."fs.pod")
 									mkdir("/ram/tempDistroUpdate/")
@@ -638,6 +640,7 @@ local objects={
 									--reboot will also clear ram, where distro is temp stored
 									for i=1, 50 do flip() end
 									send_message(2,{event="reboot"})
+									--]]
 								end
 							else
 								notify("Up to date")
