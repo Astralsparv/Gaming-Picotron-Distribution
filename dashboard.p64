@@ -484,7 +484,7 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 00:38:16",revision=432]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 01:12:35",revision=440]]
 local gui=create_gui{}
 
 local selector={
@@ -508,6 +508,10 @@ local object={
 		height=32
 	}
 }
+
+local function check_for_updates()
+	
+end
 
 local objects={
 	{
@@ -582,7 +586,28 @@ local objects={
 		fg=7,
 		fg2=6,
 		out=13,
-		dropdown={}
+		dropdown={
+			{
+					label="Check for updates",
+					labeltype="side",
+					image=get_spr(3),
+					id="system-update",
+					dropped=false,
+					highlighted={
+						bg=29,
+						bg2=29,
+						fg=7,
+						fg2=6,
+					},
+					bg=29,
+					bg2=18,
+					fg=7,
+					fg2=6,
+					out=13,
+					action=function() check_for_updates() end,
+					dropdown={}
+				}
+		}
 	},{
 		label="System",
 		labeltype="embed",
@@ -1103,9 +1128,9 @@ on_event("gained_focus",
 )
 
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#59",workspace_index=1},{location="guis/games.lua#186",workspace_index=1},{location="guis/splore.lua#243",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#8",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:12:35",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#26",workspace_index=1},{location="guis/games.lua#186",workspace_index=1},{location="guis/splore.lua#243",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#8",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-20 01:08:55"]]
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-20 01:12:35"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -1192,7 +1217,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:12:35"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -1205,16 +1230,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-20 01:08:55"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-20 01:12:35"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:12:35"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:12:35"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
