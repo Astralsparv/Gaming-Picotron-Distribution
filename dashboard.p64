@@ -220,7 +220,7 @@ function button(gui,data,extra)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-20 01:03:01",revision=703]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-20 01:39:55",revision=704]]
 mkdir("/games/")
 games=ls("/games/")
 
@@ -484,19 +484,25 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 01:37:37",revision=493]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 01:41:26",revision=506]]
 local gui=create_gui{}
 local distroOnlineSource="https://raw.githubusercontent.com/Astralsparv/Gaming-Picotron-Distribution/refs/heads/main/"
 
 local function download(fs,root)
+	mkdir(root)
 	cd(root)
-	for k,v in pairs(fs) do
-		if (type(v)=="table") then
-			download(v,root.."/"..k)
-			cd(root) --return to root afterwards
-		else
-			store(root..k,fetch(distroOnlineSource..k))
+	if (fs!=404) then
+		for k,v in pairs(fs) do
+			if (type(v)=="table") then
+				download(v,root.."/"..k)
+				cd(root) --return to root afterwards
+			else
+				notify("Downloading: "..root.."/"..v)
+				store(root.."/"..v,fetch(distroOnlineSource..v))
+			end
 		end
+	else
+		notify("Failed")
 	end
 end
 
@@ -1155,9 +1161,9 @@ on_event("gained_focus",
 )
 
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:37:37",runtime=24,workspaces={{location="main.lua#13",workspace_index=1},{location="guis/home.lua#5",workspace_index=1},{location="guis/games.lua#186",workspace_index=1},{location="guis/splore.lua#243",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#8",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:42:14",runtime=24,workspaces={{location="main.lua#13",workspace_index=1},{location="guis/home.lua#5",workspace_index=1},{location="guis/games.lua#186",workspace_index=1},{location="guis/splore.lua#243",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#8",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-20 01:37:37"]]
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-20 01:42:14"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -1244,7 +1250,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:37:37"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:42:14"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -1257,16 +1263,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-20 01:37:37"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-20 01:42:14"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:37:37"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:42:14"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:37:37"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:42:14"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
