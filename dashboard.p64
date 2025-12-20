@@ -7,7 +7,7 @@ version 2
 :: map/
 :: sfx/
 :: functs.lua
---[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-18 11:13:24",revision=104]]
+--[[pod_format="raw",created="2025-12-16 12:54:32",modified="2025-12-20 01:08:24",revision=105]]
 
 function gameSettings(path)
 	local meta=fetch_metadata(path) or {}
@@ -220,7 +220,7 @@ function button(gui,data,extra)
 	return width,height,o
 end
 :: guis/games.lua
---[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-18 19:24:30",revision=688]]
+--[[pod_format="raw",created="2025-12-16 15:41:36",modified="2025-12-20 01:03:01",revision=703]]
 mkdir("/games/")
 games=ls("/games/")
 
@@ -335,41 +335,6 @@ local w,h,o=button(gui,{
 
 add(objects[1],o)
 
-function decomp(table, indent, seen)
-    seen = seen or {}
-    if seen[table] then
-        return "<cycle>"
-    end
-    seen[table] = true
-    
-    res=""
-    indent=indent or 0
-    local pad=""
-    for i=1, indent do
-    pad..=" "
-    end
-    for key,val in pairs(table) do
-    local k=key
-    if (type(k)=="number") then
-        k="["..k.."]"
-    end
-    if (type(val)=="table") then
-        res..=k.."={\n"
-        res..=pad..decomp(val,indent+1,seen).."\n"
-        res..="},"
-    else
-        local v=val
-        if (type(v)=="string") then
-            v="\""..v.."\""
-        end
-        res..=pad..k.."="..tostr(v)..","
-    end
-        res..="\n"
-    end
-    res=res:sub(1,#res-2)
-    return res
-end
-
 for x=1, columns do
 	for y=1, rows do
 		objects[y+1][x]=gui:attach{
@@ -401,6 +366,7 @@ for x=1, columns do
 					y+=h
 				end
 				self.hovering=false
+				print(self.nowrapgame,0,0,7)
 			end,
 			tap=function(self)
 				create_process(self.game,{window_attribs={workspace="new"}}) --windowed games would appear in dashboard without
@@ -410,17 +376,13 @@ for x=1, columns do
 		}
 	end
 end
---[[
-store("/desktop/decomp.txt",decomp(objects))
-store("/distributions/bootinto.txt","picotron0_2_1e")
-send_message(2,{event="reboot"})
-]]
 
-local row=2
+local gamepoint=1
 
 function loadGames(startat)
 	local row=2
 	if (startat<1) startat=1
+	gamepoint=startat
 	for i=startat, min(startat+7,#games) do
 		if (i==startat+4) row=3
 		local meta=fetch_metadata("/games/"..games[i]) or {}
@@ -445,7 +407,7 @@ function loadGames(startat)
 		o.fg=7
 		o.fg2=6
 		o.game="/games/"..games[i]
-		o.nowrapgame=(i>4)
+		o.nowrapgame=(i>4) and ((i+4)<#games)
 		label=split(label,"\n")
 		local processed={}
 		for i=1, #label do
@@ -457,7 +419,6 @@ function loadGames(startat)
 	calcObjectPositions()
 end
 
-local gamepoint=1
 loadGames(gamepoint)
 
 local function selectObject(pos)
@@ -474,8 +435,9 @@ local function selectObject(pos)
 				canswitchobj=false
 				return true --stay selected
 			else
-				objects[pos.y][pos.x].selected=true
 				canswitchobj=false
+				if (objects[pos.y][pos.x].selected) return true --stay selected, it is itself
+				objects[pos.y][pos.x].selected=true
 				return false --deselect
 			end
 		end
@@ -522,7 +484,7 @@ function draw_games()
 end
 
 :: guis/home.lua
---[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-18 11:45:52",revision=427]]
+--[[pod_format="raw",created="2025-12-16 12:38:10",modified="2025-12-20 00:38:16",revision=432]]
 local gui=create_gui{}
 
 local selector={
@@ -566,8 +528,8 @@ local objects={
 		fg2=6,
 		dropdown={
 			{
-				label="Cartridge",
-				id="game-cartridge",
+				label="BBS",
+				id="game-bbs",
 				labeltype="side",
 				highlighted={
 					bg=29,
@@ -581,23 +543,7 @@ local objects={
 				bg2=18,
 				fg=7,
 				fg2=6,
-				dropdown={}
-			},{
-				label="Recently Played",
-				id="game-recent",
-				labeltype="side",
-				highlighted={
-					bg=29,
-					bg2=29,
-					fg=7,
-					fg2=6,
-				},
-				image=get_spr(2),
-				dropped=false,
-				bg=29,
-				bg2=18,
-				fg=7,
-				fg2=6,
+				action=function() open_splore() screen="splore" end,
 				dropdown={}
 			},{
 				label="All Games",
@@ -796,8 +742,319 @@ function draw_home()
 	end
 end
 
+:: guis/splore.lua
+--[[pod_format="raw",created="2025-12-20 00:04:57",modified="2025-12-20 01:02:59",revision=116]]
+mkdir("/ram/bbs_cache")
+
+local objects={
+{}, --top bar
+{}, --game row 1
+{}  --game row 2
+}
+local function request(page,cat,sub,max)
+	max=max or 32
+	page=page or 1
+	local req="https://www.lexaloffle.com/bbs/pod.php?&max="..max.."&start_index="..(page*max)
+	if (cat) req..="&cat="..cat
+	if (sub) req..="&sub="..sub
+	return fetch(req)
+end
+
+local function loadBBS(page,amount,sub)
+	--picotron category = 8
+	--amount of games per page = 8
+	local data=request(page,8,sub,amount or 8)
+	
+	for i=1, #data do
+		--don't do anything if it exists in cache, fine to do, mostly, since in ram
+		--99% cases you'd have rebooted by the time a new update comes
+		
+		local p=data[i]
+		local storepath="/ram/bbs_cache/"..(p.id)..".p64.png"
+		if (fstat(storepath)==nil) then
+			local url="https://www.lexaloffle.com/bbs/cposts/"
+			url..=(p.id:sub(1,2)).."/"
+			url..=(p.id)..".p64.png"
+			fetch(url,{on_complete=function(res)
+				if (res) then
+					store(storepath,res) --temporarily store bbs carts
+					local meta=fetch_metadata(storepath) --why is the metadata not in on_complete?
+					--add meta like title & author if nil, taken from bbs
+					if (meta.title==nil or meta.author==nil) then
+						meta.title=meta.title or p.title
+						meta.author=meta.title or p.author
+						store_metadata(storepath,meta)
+					end
+				end
+			end})
+		end
+	end
+end
+
+local function objectPosition(x,y,vx,vy,nowrapgame)
+	local nx=x+vx
+	local ny=y+vy
+	if (nowrapgame) then
+		if (ny==1) return {x=x,y=0}
+		if (ny>#objects) return {x=x,y=ny}
+	else
+		if (ny==0) ny=#objects
+		if (ny>#objects) ny=1
+	end
+	
+	if (nx==0) nx=#objects[ny]
+	if (nx>#objects[ny]) nx=1
+	return {x=nx,y=ny}
+end
+
+--calculate obj positions to go to with dpad
+
+local function calcObjectPositions()
+	for y=1, #objects do
+		for x=1, #objects[y] do
+			local o=objects[y][x]
+			o.left=objectPosition(x,y,-1,0,o.nowrapgame)
+			o.right=objectPosition(x,y,1,0,o.nowrapgame)
+			o.up=objectPosition(x,y,0,-1,o.nowrapgame)
+			o.down=objectPosition(x,y,0,1,o.nowrapgame)
+		end
+	end
+end
+
+local canswitchobj=true
+local theming={
+	highlighted={
+		bg=29,
+		bg2=29,
+		fg=7,
+		fg2=6,
+	},
+	bg=29,
+	bg2=18,
+	fg=7,
+	fg2=6,
+	out=13,
+}
+
+--why isn't is_cart() working?
+local function is_cart(filepath)
+	return (filepath:ext()=="p64") or (filepath:ext()=="p64.png") or (filepath:ext()=="p64.rom")
+end
+
+for i=#games, 1, -1 do
+	if (not (is_cart(games[i]))) then
+		deli(games,i)
+	end
+end
+
+local gui=create_gui{}
+
+local selector={
+	x=0,
+	y=0
+}
+
+local x,y=2,2
+
+local w,h=text(gui,{
+	x=x,
+	y=y,
+	label="\^w\^tSPLORE",
+})
+y+=h+5
+
+local object={
+	width=75,height=75,pad=10,
+	image={
+		width=48,
+		height=48
+	}
+}
+
+local rows=2
+local columns=4
+
+local xx=240-columns*(object.width+object.pad)/2
+local yy=135-rows*(object.height+object.pad)/2
+
+x,y=xx,yy-15
+local w,h,o=button(gui,{
+	x=x,
+	y=y,
+	label="\014\^w\^tEXIT",
+	bg=theming.bg,
+	bg2=theming.bg2,
+	rounding=2,
+	paddingw=6,
+	paddingh=1,
+	tap=function()
+		window{cursor=1}
+		screen="home"
+	end
+})
+
+--o.draw=function(self)
+--	print(self.left.x.." "..self.left.y,0,0,7)
+--end
+add(objects[1],o)
+
+for x=1, columns do
+	for y=1, rows do
+		objects[y+1][x]=gui:attach{
+			x=(x-1)*(object.width+object.pad)+xx,
+			y=(y-1)*(object.width+object.pad)+yy,
+			width=object.width,height=object.height,
+			image=get_spr(1),
+			label={},
+			labelcolor=7,
+			imagex=object.width/2-object.image.width/2,
+			imagey=3,
+			hovering=false,
+			cursor="pointer",
+			draw=function(self)
+				local bg2=theming.bg2
+				local bg=theming.bg
+				if (self.hovering or self.selected) then
+					bg,bg2=theming.highlighted.bg,theming.highlighted.bg2
+				end
+				rrectfill(0,0,self.width-1,self.height-1,8,bg2)
+				rrectfill(0,0,self.width-3,self.height-3,8,bg)
+				spr(self.image,self.imagex,self.imagey)
+				local y=object.image.height+2+self.imagey
+				for _,data in pairs(self.label) do
+					local label=data.label
+					local w=data.w
+					local h=data.h
+					print(label,object.width/2-w/2,y,self.labelcolor)
+					y+=h
+				end
+				self.hovering=false
+			end,
+			tap=function(self)
+				create_process(self.game,{window_attribs={workspace="new"}}) --windowed games would appear in dashboard without
+				send_message(3,{event="controllerPointer",data=gameSettings(self.game).controllerPointer})
+			end,
+			hover=function(self) self.hovering=true end,
+		}
+	end
+end
+local gamepoint=1
+function loadGames(startat)
+	local row=2
+	games=ls("/ram/bbs_cache/")
+	if (startat<1) startat=1
+	gamepoint=startat
+	for i=startat, min(startat+7,#games) do
+		if (i==startat+4) row=3
+		local meta=fetch_metadata("/ram/bbs_cache/"..games[i]) or {}
+		local label=wrapText(meta.title or games[i],object.width)
+		local o=objects[row][(i+1-startat)-(row-2)*4]
+		o.image=meta.icon or get_spr(1)
+		if (o.image:width()!=object.image.width or o.image:height()!=object.image.height) then
+			local ud=userdata("u8",object.image.width,object.image.height)
+			set_draw_target(ud)
+			sspr(o.image,0,0,nil,nil,0,0,object.image.width,object.image.height)
+			set_draw_target()
+			o.image=ud
+		end
+		o.highlighted={
+			bg=29,
+			bg2=29,
+			fg=7,
+			fg2=6
+		}
+		o.bg=29
+		o.bg2=18
+		o.fg=7
+		o.fg2=6
+		o.game="/ram/bbs_cache/"..games[i]
+		o.nowrapgame=(i>4) and ((i+4)<#games)
+		label=split(label,"\n")
+		local processed={}
+		for i=1, #label do
+			local w,h=proportions(label[i])
+			add(processed,{label=label[i],w=w,h=h})
+		end
+		o.label=processed
+	end
+	calcObjectPositions()
+end
+
+loadGames(gamepoint)
+
+local function selectObject(pos)
+	if (canswitchobj) then
+		if (pos) then
+			if (pos.y>#objects) then
+				--load diff games
+				loadGames(gamepoint+4)
+				canswitchobj=false
+				return true --stay selected
+			elseif (pos.y<1) then
+				--load diff games
+				loadGames(gamepoint-4)
+				canswitchobj=false
+				return true --stay selected
+			else
+				canswitchobj=false
+				if (objects[pos.y][pos.x].selected) return true --stay selected, it is itself
+				objects[pos.y][pos.x].selected=true
+				return false --deselect
+			end
+		end
+	end
+end
+
+for i=1, #objects do
+	for j=1, #objects[i] do
+		objects[i][j].selected=false
+		objects[i][j].update=function(self)
+			if (canswitchobj and self.selected) then
+				if (btnp(0)) self.selected=selectObject(self.left)
+				if (btnp(1)) self.selected=selectObject(self.right)
+				if (btnp(2)) self.selected=selectObject(self.up)
+				if (btnp(3)) self.selected=selectObject(self.down)
+				if (btnp(5)) self:tap()
+			end
+		end
+	end
+end
+
+objects[2][1].selected=true
+
+local selected=""
+local internetCheck=time()
+
+local init=false
+
+function open_splore()
+	if (not init) then
+		loadBBS(0,48)
+	end
+	init=true
+end
+
+function update_splore()
+	gui:update_all()
+	canswitchobj=true
+end
+
+function draw_splore()
+	gui:draw_all()
+	-- draw time
+	local format = "%Y-%m-%d %H:%M:%S"
+	print(date(format):sub(1,10),5,20,7)
+	print(date(format):sub(12),5,30,7)
+	
+	if (internetAccess) then
+		spr(56,5,40)
+	else
+		spr(57,5,40)
+	end
+end
+
 :: main.lua
---[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-18 19:23:28",revision=64]]
+--[[pod_format="raw",created="2025-12-16 12:30:40",modified="2025-12-20 00:06:43",revision=68]]
 
 fetch("fonts/thin.font"):poke(0x4000)
 fetch("fonts/widesquat.font"):poke(0x5600)
@@ -806,6 +1063,7 @@ include "functs.lua"
 include "gui.lua"
 include "guis/home.lua"
 include "guis/games.lua"
+include "guis/splore.lua"
 
 poke(0x547d, 0x3f)
 window{width=480,height=270,has_frame=false,x=0,y=0,z=-999}
@@ -822,6 +1080,8 @@ function _update()
 		update_home()
 	elseif (screen=="games") then
 		update_games()
+	elseif (screen=="splore") then
+		update_splore()
 	end
 end
 
@@ -831,6 +1091,8 @@ function _draw()
 		draw_home()
 	elseif (screen=="games") then
 		draw_games()
+	elseif (screen=="splore") then
+		draw_splore()
 	end
 end
 
@@ -841,9 +1103,9 @@ on_event("gained_focus",
 )
 
 :: .info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 19:24:30",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#152",workspace_index=1},{location="guis/games.lua#184",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#19",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55",runtime=24,workspaces={{location="main.lua#9",workspace_index=1},{location="guis/home.lua#59",workspace_index=1},{location="guis/games.lua#186",workspace_index=1},{location="guis/splore.lua#243",workspace_index=1},{location="gui.lua#90",workspace_index=1},{location="functs.lua#8",workspace_index=1},{location="gfx/0.gfx",workspace_index=2}}]]
 :: fonts/.info.pod
---[[pod,created="2025-12-17 18:41:57",modified="2025-12-18 19:24:30"]]
+--[[pod,created="2025-12-17 18:41:57",modified="2025-12-20 01:08:55"]]
 :: fonts/thin.font
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTEyLTE3IDE4OjQ0OjMyIixpY29uPXVzZXJkYXRhKCJ1
 OCIsMTYsMTYsIjAwMDEwMTAxMDEwMTAxMDEwMTAxMDEwMDAwMDAwMDAwMDAwMTA3MDcwNzA3MDcw
@@ -930,7 +1192,7 @@ AQADIAgEIgFAfiAPQEwAgWgGIAMEAwQJmgDwQxQgBS0BIAMNAw0DIAEAAQsMICoLDSAvFA9UDzIg
 Fw8iDxIPDiABLyIBIAEOCw0CIAELCQsMIAYbDQ8OMA8VDQ8IBjAEAw8UBEACDwgDMAUMDQVvAKBj
 DQggCA0KBAgg
 :: gfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 19:24:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
 :: gfx/0.gfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0x
 Mi0xNiAxNTozMzo0NCIscmV2aXNpb249MjRdXWx6NACtAQAAvTIAAPYXe1swXT17Ym1wPXB4dQBD
@@ -943,16 +1205,16 @@ EEcQBxAHQAcOAK8wR0AHQAdgB-AATgAcUSBHQAcAAgATIAQAAVkA8QJHIEcQByAHEEcgJRcQJxUQ
 BRgAYAUABQAFECQAfwUQFSA3JQAdAR4PMQD-----------------------------------------
 --------41BtPTh9fQ==
 :: guis/.info.pod
---[[pod,created="2025-12-16 12:38:07",modified="2025-12-18 19:24:30"]]
+--[[pod,created="2025-12-16 12:38:07",modified="2025-12-20 01:08:55"]]
 :: map/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 19:24:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
 MS0xNyAxMDozNzo0NCIscmV2aXNpb249MV1dbHo0AFQAAABEEAAA8Ah7e2JtcD11c2VyZGF0YSgi
 aTE2IiwzMgMALyIwAQD--------------------7oSIpLHBhbl94PTAIANJ5PTAsdGlsZV9oPTE2
 CgBgdz0xNn19
 :: sfx/.info.pod
---[[pod,created="2025-11-13 21:07:43",modified="2025-12-18 19:24:30"]]
+--[[pod,created="2025-11-13 21:07:43",modified="2025-12-20 01:08:55"]]
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA3LTMxIDA4OjMwOjI4Iixtb2RpZmllZD0iMjAyNS0w
 Ny0zMSAwODozMDoyOCIscmV2aXNpb249MF1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9AEAIO
